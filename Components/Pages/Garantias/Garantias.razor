@@ -1,5 +1,6 @@
 ﻿@page "/Garantias"
 @rendermode InteractiveServer
+@inject IJSRuntime JS
 
 <AdminLayout ActivePage="warranties">
 <div class="pagina-garantias">
@@ -56,7 +57,7 @@
             </button>
 
 
-            <button class="btn-generar">
+            <button class="btn-generar" type="button" @onclick="ImprimirReporte">
                 <i class="cil-print" aria-hidden="true"></i> Generar/Imprimir
             </button>
 
@@ -267,3 +268,10 @@
 
 </div>
 </AdminLayout>
+
+@code {
+    private async Task ImprimirReporte()
+    {
+        await JS.InvokeVoidAsync("window.print");
+    }
+}

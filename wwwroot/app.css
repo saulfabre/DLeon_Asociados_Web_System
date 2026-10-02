@@ -253,6 +253,233 @@ body *:not(i):not([class^="cil-"]):not([class*=" cil-"]) {
     min-width: 0;
 }
 
+.admin-form-page {
+    min-height: 100vh;
+    background: #f6f8fb;
+    color: #172033;
+}
+
+.admin-form-header {
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    padding: 12px 24px;
+    border-bottom: 1px solid #e3e8ef;
+    background: #fff;
+}
+
+.admin-form-header h1 {
+    margin: 6px 0 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.admin-form-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #526173;
+    font-size: 0.85rem;
+    text-decoration: none;
+}
+
+.admin-form-back:hover {
+    color: #2864e8;
+}
+
+.admin-form-content {
+    width: min(100% - 48px, 900px);
+    margin: 24px auto;
+}
+
+.admin-form-card {
+    padding: 24px;
+    border: 1px solid #dfe6ee;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgb(23 32 51 / 4%);
+}
+
+.admin-form-description {
+    margin: 0 0 22px;
+    color: #718096;
+}
+
+.admin-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.admin-form-field {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.admin-form-field-full {
+    grid-column: 1 / -1;
+}
+
+.admin-form-field label {
+    color: #344054;
+    font-weight: 600;
+}
+
+.admin-form-field input,
+.admin-form-field select {
+    width: 100%;
+    min-height: 42px;
+    padding: 9px 12px;
+    border: 1px solid #d9e1ea;
+    border-radius: 7px;
+    background: #fff;
+    color: #253044;
+    font: inherit;
+    box-sizing: border-box;
+}
+
+.admin-form-field input:focus,
+.admin-form-field select:focus {
+    border-color: #2864e8;
+    outline: 2px solid rgb(40 100 232 / 15%);
+}
+
+.admin-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 26px;
+    padding-top: 20px;
+    border-top: 1px solid #e8edf2;
+}
+
+.admin-form-cancel,
+.admin-form-save {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 7px;
+    font: inherit;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.admin-form-cancel {
+    background: #eef2f6;
+    color: #344054;
+}
+
+.admin-form-save {
+    background: #2864e8;
+    color: #fff;
+}
+
+.admin-form-save:hover {
+    background: #1f55cc;
+}
+
+.admin-import-card {
+    max-width: 620px;
+    margin: 0 auto;
+}
+
+.admin-import-icon {
+    color: #2864e8;
+    font-size: 1.8rem;
+}
+
+.admin-import-card h2 {
+    margin: 12px 0 6px;
+    font-size: 1.1rem;
+}
+
+.admin-import-card > p {
+    margin: 0 0 24px;
+    color: #718096;
+}
+
+@media print {
+    @page {
+        size: landscape;
+        margin: 12mm;
+    }
+
+    body,
+    .admin-layout,
+    .admin-main,
+    .pagina-seguros,
+    .pagina-garantias {
+        width: 100% !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+        color: #172033 !important;
+    }
+
+    .admin-sidebar,
+    .barra-filtros,
+    .header-derecha {
+        display: none !important;
+    }
+
+    .header-seguros,
+    .header-garantias {
+        height: auto !important;
+        padding: 0 0 12px !important;
+        border-bottom: 1px solid #9ca3af !important;
+        background: #fff !important;
+    }
+
+    .header-seguros h1,
+    .header-garantias h1 {
+        color: #172033 !important;
+        font-size: 18pt !important;
+    }
+
+    .contenido-seguros,
+    .contenido-garantias {
+        padding: 14px 0 0 !important;
+        overflow: visible !important;
+    }
+
+    .tabla-seguros,
+    .tabla-garantias {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        background: #fff !important;
+        font-size: 9pt !important;
+    }
+
+    .tabla-seguros thead,
+    .tabla-garantias thead {
+        display: table-header-group;
+    }
+
+    .tabla-seguros tr,
+    .tabla-garantias tr {
+        break-inside: avoid;
+    }
+
+    .tabla-seguros th,
+    .tabla-seguros td,
+    .tabla-garantias th,
+    .tabla-garantias td {
+        height: auto !important;
+        padding: 8px !important;
+        border: 1px solid #cbd5e1 !important;
+        background: #fff !important;
+        color: #172033 !important;
+        font-size: 9pt !important;
+    }
+}
+
 @media (max-width: 900px) {
     .admin-layout .header-seguros,
     .admin-layout .header-repuestos,
@@ -268,6 +495,23 @@ body *:not(i):not([class^="cil-"]):not([class*=" cil-"]) {
 }
 
 @media (max-width: 640px) {
+    .admin-form-content {
+        width: calc(100% - 32px);
+        margin: 16px auto;
+    }
+
+    .admin-form-card {
+        padding: 18px;
+    }
+
+    .admin-form-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .admin-form-field-full {
+        grid-column: auto;
+    }
+
     .admin-layout .header-seguros,
     .admin-layout .header-repuestos,
     .admin-layout .header-garantias,

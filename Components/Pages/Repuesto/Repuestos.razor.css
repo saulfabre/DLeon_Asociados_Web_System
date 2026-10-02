@@ -101,6 +101,9 @@
    ========================= */
 
 .btn-importar {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
     height: 38px;
     padding: 0 15px;
     border: 1px solid #d9e1ea;
@@ -118,6 +121,9 @@
 
 
 .btn-agregar {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
     height: 38px;
     padding: 0 16px;
     border: none;

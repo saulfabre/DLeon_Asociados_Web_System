@@ -1,0 +1,266 @@
+﻿@page "/Seguros"
+@rendermode InteractiveServer
+
+<AdminLayout ActivePage="insurance">
+<div class="pagina-seguros">
+
+    <!-- Barra superior -->
+    <header class="header-seguros">
+
+        <h1>Reporte de seguros próximos a expirar</h1>
+
+        <div class="header-derecha">
+            <button class="btn-notificacion" type="button" aria-label="Notificaciones">
+                <i class="cil-bell" aria-hidden="true"></i>
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- Contenido -->
+    <main class="contenido-seguros">
+
+        <!-- Barra de filtros -->
+        <div class="barra-filtros">
+
+            <input class="buscar-seguro"
+                   type="text"
+                   placeholder="Buscar vehículo o placa..." />
+
+
+            <select class="filtro">
+                <option>Estado</option>
+                <option>Todos</option>
+                <option>Activo</option>
+                <option>Expira pronto</option>
+                <option>Vencido</option>
+            </select>
+
+
+            <select class="filtro fecha">
+                <option>Sep 2026</option>
+                <option>Oct 2026</option>
+                <option>Nov 2026</option>
+                <option>Dic 2026</option>
+            </select>
+
+
+            <button class="btn-limpiar">
+                Limpiar Filtro
+            </button>
+
+
+            <button class="btn-generar">
+                <i class="cil-print" aria-hidden="true"></i> Generar/Imprimir
+            </button>
+
+        </div>
+
+
+        <!-- Tabla -->
+        <table class="tabla-seguros">
+
+            <thead>
+
+                <tr>
+
+                    <th>Vehículo</th>
+
+                    <th>Placa</th>
+
+                    <th>Seguro</th>
+
+                    <th>Fecha de inicio</th>
+
+                    <th>Fecha de expiración</th>
+
+                    <th>Días restantes</th>
+
+                    <th>Estado</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                <tr>
+
+                    <td class="vehiculo">
+                        Toyota Corolla 2023
+                    </td>
+
+                    <td>
+                        L-8A-901
+                    </td>
+
+                    <td>
+                        Seguro Vehicular
+                    </td>
+
+                    <td class="fecha-gris">
+                        20/09/2025
+                    </td>
+
+                    <td>
+                        20/09/2026
+                    </td>
+
+                    <td class="dias">
+                        2
+                    </td>
+
+                    <td class="estado-expira">
+                        <i class="cil-clock" aria-hidden="true"></i> Expira pronto
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="vehiculo">
+                        Honda Civic 2021
+                    </td>
+
+                    <td>
+                        G-2C-118
+                    </td>
+
+                    <td>
+                        Seguro Vehicular
+                    </td>
+
+                    <td class="fecha-gris">
+                        23/09/2025
+                    </td>
+
+                    <td>
+                        23/09/2026
+                    </td>
+
+                    <td class="dias">
+                        5
+                    </td>
+
+                    <td class="estado-expira">
+                        <i class="cil-clock" aria-hidden="true"></i> Expira pronto
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="vehiculo">
+                        Hyundai Tucson 2022
+                    </td>
+
+                    <td>
+                        M-9F-442
+                    </td>
+
+                    <td>
+                        Seguro Vehicular
+                    </td>
+
+                    <td class="fecha-gris">
+                        25/09/2025
+                    </td>
+
+                    <td>
+                        25/09/2026
+                    </td>
+
+                    <td class="dias">
+                        7
+                    </td>
+
+                    <td class="estado-expira">
+                        <i class="cil-clock" aria-hidden="true"></i> Expira pronto
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="vehiculo">
+                        Kia Sportage 2020
+                    </td>
+
+                    <td>
+                        K-1B-776
+                    </td>
+
+                    <td>
+                        Seguro Vehicular
+                    </td>
+
+                    <td class="fecha-gris">
+                        27/09/2025
+                    </td>
+
+                    <td>
+                        27/09/2026
+                    </td>
+
+                    <td class="dias">
+                        9
+                    </td>
+
+                    <td class="estado-expira">
+                        <i class="cil-clock" aria-hidden="true"></i> Expira pronto
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="vehiculo">
+                        Nissan Sentra 2019
+                    </td>
+
+                    <td>
+                        N-4D-203
+                    </td>
+
+                    <td>
+                        Seguro Vehicular
+                    </td>
+
+                    <td class="fecha-gris">
+                        30/09/2025
+                    </td>
+
+                    <td>
+                        30/09/2026
+                    </td>
+
+                    <td class="dias">
+                        12
+                    </td>
+
+                    <td class="estado-expira">
+                        <i class="cil-clock" aria-hidden="true"></i> Expira pronto
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </main>
+
+</div>
+</AdminLayout>
+
+
+@code{
+
+}

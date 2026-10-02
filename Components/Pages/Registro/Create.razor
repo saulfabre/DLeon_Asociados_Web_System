@@ -1,0 +1,237 @@
+﻿@page "/clientes"
+@rendermode InteractiveServer
+
+<PageTitle>Counter</PageTitle>
+
+<AdminLayout ActivePage="customers">
+<div class="pagina">
+
+    <!-- Barra superior -->
+    <header class="header">
+
+        <h1>Registro de Cliente</h1>
+
+        <div class="header-derecha">
+            <button class="btn-notificacion" type="button" aria-label="Notificaciones">
+                <i class="cil-bell" aria-hidden="true"></i>
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- Contenido -->
+    <main class="contenido">
+
+        <label class="busqueda-body">
+            <i class="cil-search" aria-hidden="true"></i>
+            <input type="search" placeholder="Buscar cliente por nombre, documento o correo..." />
+        </label>
+
+        <!-- Encabezado del cliente -->
+        <div class="encabezado">
+
+            <div class="titulo">
+
+                <button class="btn-volver" type="button" aria-label="Volver">
+                    <i class="cil-arrow-left" aria-hidden="true"></i>
+                </button>
+
+                <div>
+
+                    <h2>Ficha de Cliente: Marcos Pérez</h2>
+
+                    <p>
+                        Modificar información y vehículos asociados
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="acciones">
+
+                <button class="btn-cancelar">
+                    Cancelar
+                </button>
+
+                <button class="btn-guardar">
+                    Guardar Cambios
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- Tarjetas -->
+        <div class="tarjetas">
+            <!-- Datos personales -->
+            <section class="tarjeta" >
+
+                <h3>Datos Personales</h3>
+
+
+                <div class="fila">
+
+                    <div class="campo">
+
+                        <label>Nombre</label>
+
+                        <input type="text"
+                               value="Marcos" />
+
+                    </div>
+
+
+                    <div class="campo">
+
+                        <label>Apellido</label>
+
+                        <input type="text"
+                               value="Pérez" />
+
+                    </div>
+
+                </div>
+
+
+                <div class="fila">
+
+                    <div class="campo">
+
+                        <label>Cédula / Documento</label>
+
+                        <input type="text"
+                               value="056-54874566-8" />
+
+                    </div>
+
+
+                    <div class="campo">
+
+                        <label>Teléfono</label>
+
+                        <input type="text"
+                               value="809-721-9539" />
+
+                    </div>
+
+                </div>
+
+
+                <div class="campo completo">
+
+                    <label>Correo Electrónico</label>
+
+                    <input type="email"
+                           value="marcos.perez@email.com" />
+
+                </div>
+
+
+                <div class="campo completo">
+
+                    <label>Dirección Residencial</label>
+
+                    <input type="text"
+                           value="Av. San Martín 456, Santiago" />
+
+                </div>
+
+            </section>
+
+
+            <!-- Vehículos asociados -->
+            <section class="tarjeta">
+
+                <div class="titulo-vehiculos">
+
+                    <h3>Vehículos Asociados</h3>
+
+                    <button class="btn-asociar" type="button">
+                        <i class="cil-plus" aria-hidden="true"></i> Asociar Nuevo
+                    </button>
+
+                </div>
+
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Patente</th>
+
+                            <th>Vehículo</th>
+
+                            <th>Año</th>
+
+                            <th>Último Servicio</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td class="patente">
+                                ABC-123
+                            </td>
+
+                            <td>
+                                Toyota Corolla
+                            </td>
+
+                            <td>
+                                2023
+                            </td>
+
+                            <td>
+                                12 Oct 2023
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td class="patente">
+                                XYZ-987
+                            </td>
+
+                            <td>
+                                Toyota Hilux
+                            </td>
+
+                            <td>
+                                2021
+                            </td>
+
+                            <td>
+                                05 Ene 2024
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+</AdminLayout>
+
+@code {}
+    

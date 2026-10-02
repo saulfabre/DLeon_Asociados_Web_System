@@ -1,0 +1,269 @@
+﻿@page "/Garantias"
+@rendermode InteractiveServer
+
+<AdminLayout ActivePage="warranties">
+<div class="pagina-garantias">
+
+    <!-- BARRA SUPERIOR -->
+    <header class="header-garantias">
+
+        <h1>Reporte de garantías próximas a expirar</h1>
+
+        <div class="header-derecha">
+            <button class="btn-notificacion" type="button" aria-label="Notificaciones">
+                <i class="cil-bell" aria-hidden="true"></i>
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- CONTENIDO -->
+    <main class="contenido-garantias">
+
+        <!-- FILTROS -->
+        <div class="barra-filtros">
+
+            <input class="buscar-garantia"
+                   type="text"
+                   placeholder="Buscar vehículo o placa..." />
+
+
+            <select class="filtro">
+
+                <option>Estado</option>
+                <option>Todos</option>
+                <option>Vigente</option>
+                <option>Expira pronto</option>
+                <option>Vencida</option>
+
+            </select>
+
+
+            <select class="filtro">
+
+                <option>Sep 2026</option>
+                <option>Oct 2026</option>
+                <option>Nov 2026</option>
+                <option>Dic 2026</option>
+
+            </select>
+
+
+            <button class="btn-limpiar">
+                Limpiar Filtro
+            </button>
+
+
+            <button class="btn-generar">
+                <i class="cil-print" aria-hidden="true"></i> Generar/Imprimir
+            </button>
+
+        </div>
+
+
+        <!-- TABLA -->
+        <table class="tabla-garantias">
+
+            <thead>
+
+                <tr>
+
+                    <th>Vehículo</th>
+
+                    <th>Placa</th>
+
+                    <th>Garantía</th>
+
+                    <th>Fecha de inicio</th>
+
+                    <th>Fecha de expiración</th>
+
+                    <th>Días restantes</th>
+
+                    <th>Estado</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                <tr>
+
+                    <td class="vehiculo">
+                        Toyota Corolla 2023
+                    </td>
+
+                    <td>
+                        L-8A-901
+                    </td>
+
+                    <td>
+                        Garantía de<br />
+                        fábrica
+                    </td>
+
+                    <td class="fecha-gris">
+                        20/09/2025
+                    </td>
+
+                    <td>
+                        20/09/2026
+                    </td>
+
+                    <td class="dias">
+                        2
+                    </td>
+
+                    <td class="estado-expira">
+                        <i class="cil-clock" aria-hidden="true"></i> Expira pronto
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="vehiculo">
+                        Honda Civic 2021
+                    </td>
+
+                    <td>
+                        G-2C-118
+                    </td>
+
+                    <td>
+                        Garantía<br />
+                        extendida
+                    </td>
+
+                    <td class="fecha-gris">
+                        23/09/2025
+                    </td>
+
+                    <td>
+                        23/09/2026
+                    </td>
+
+                    <td class="dias">
+                        5
+                    </td>
+
+                    <td class="estado-expira">
+                        <i class="cil-clock" aria-hidden="true"></i> Expira pronto
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="vehiculo">
+                        Hyundai Tucson 2022
+                    </td>
+
+                    <td>
+                        M-9F-442
+                    </td>
+
+                    <td>
+                        Garantía de motor
+                    </td>
+
+                    <td class="fecha-gris">
+                        25/09/2025
+                    </td>
+
+                    <td>
+                        25/09/2026
+                    </td>
+
+                    <td class="dias">
+                        7
+                    </td>
+
+                    <td class="estado-expira">
+                        <i class="cil-clock" aria-hidden="true"></i> Expira pronto
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="vehiculo">
+                        Kia Sportage 2020
+                    </td>
+
+                    <td>
+                        K-1B-776
+                    </td>
+
+                    <td>
+                        Garantía de<br />
+                        transmisión
+                    </td>
+
+                    <td class="fecha-gris">
+                        27/09/2025
+                    </td>
+
+                    <td>
+                        27/09/2026
+                    </td>
+
+                    <td class="dias">
+                        9
+                    </td>
+
+                    <td class="estado-expira">
+                        <i class="cil-clock" aria-hidden="true"></i> Expira pronto
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="vehiculo">
+                        Nissan Sentra 2019
+                    </td>
+
+                    <td>
+                        N-4D-203
+                    </td>
+
+                    <td>
+                        Garantía de<br />
+                        batería
+                    </td>
+
+                    <td class="fecha-gris">
+                        30/09/2025
+                    </td>
+
+                    <td>
+                        30/09/2026
+                    </td>
+
+                    <td class="dias">
+                        12
+                    </td>
+
+                    <td class="estado-expira">
+                        <i class="cil-clock" aria-hidden="true"></i> Expira pronto
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </main>
+
+</div>
+</AdminLayout>

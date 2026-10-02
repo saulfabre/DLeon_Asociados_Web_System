@@ -1,0 +1,186 @@
+﻿@page "/Proveedores"
+@rendermode InteractiveServer
+
+<AdminLayout ActivePage="suppliers">
+<div class="pagina-proveedores">
+
+    <!-- ENCABEZADO -->
+    <header class="header-proveedores">
+
+        <h1>Proveedores</h1>
+
+        <div class="header-derecha">
+            <button class="btn-notificacion" type="button" aria-label="Notificaciones">
+                <i class="cil-bell" aria-hidden="true"></i>
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- CONTENIDO -->
+    <main class="contenido-proveedores">
+
+        <!-- FILTROS -->
+        <div class="filtros">
+
+            <input type="text"
+                   class="buscar-proveedor"
+                   placeholder="Buscar proveedor por nombre o código..." />
+
+            <select>
+                <option>Estado</option>
+                <option>Activo</option>
+                <option>Inactivo</option>
+            </select>
+
+            <select>
+                <option>Ciudad</option>
+                <option>Santo Domingo</option>
+                <option>Puerto Plata</option>
+                <option>Santiago</option>
+                <option>La Romana</option>
+            </select>
+
+            <button class="btn-limpiar">
+                Limpiar Filtro
+            </button>
+
+            <button class="btn-agregar">
+                <i class="cil-plus" aria-hidden="true"></i> Agregar Proveedor
+            </button>
+
+        </div>
+
+
+        <!-- TABLA -->
+        <table class="tabla-proveedores">
+
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Cédula/RNC</th>
+                    <th>Teléfono</th>
+                    <th>Correo</th>
+                    <th>Ciudad</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>Repuestos Saul RS</td>
+                    <td>056-548741-4</td>
+                    <td>809-876-6412</td>
+                    <td>Saul12@gmail.com</td>
+                    <td>Santo Domingo</td>
+
+                    <td>
+                        <span class="estado activo">
+                            Activo
+                        </span>
+                    </td>
+
+                    <td>
+                        <button class="btn-editar" type="button" aria-label="Editar proveedor"><i class="cil-pencil" aria-hidden="true"></i></button>
+                        <button class="btn-eliminar" type="button" aria-label="Eliminar proveedor"><i class="cil-trash" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <td>Distribuidor Euwin.BR</td>
+                    <td>045-458741-1</td>
+                    <td>809-721-9539</td>
+                    <td>Euwin@gmail.com</td>
+                    <td>Puerto Plata</td>
+
+                    <td>
+                        <span class="estado inactivo">
+                            Inactivo
+                        </span>
+                    </td>
+
+                    <td>
+                        <button class="btn-editar" type="button" aria-label="Editar proveedor"><i class="cil-pencil" aria-hidden="true"></i></button>
+                        <button class="btn-eliminar" type="button" aria-label="Eliminar proveedor"><i class="cil-trash" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <td>Repuesto Esthaly.ER</td>
+                    <td>408-87475-8</td>
+                    <td>829-987-8745</td>
+                    <td>Esthaly@gmail.com</td>
+                    <td>Tenares</td>
+
+                    <td>
+                        <span class="estado activo">
+                            Activo
+                        </span>
+                    </td>
+
+                    <td>
+                        <button class="btn-editar" type="button" aria-label="Editar proveedor"><i class="cil-pencil" aria-hidden="true"></i></button>
+                        <button class="btn-eliminar" type="button" aria-label="Eliminar proveedor"><i class="cil-trash" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <td>Repuesto Lola.rd</td>
+                    <td>098-871857-3</td>
+                    <td>849-245-8745</td>
+                    <td>Lola@gmail.com</td>
+                    <td>Jarabacoa</td>
+
+                    <td>
+                        <span class="estado inactivo">
+                            Inactivo
+                        </span>
+                    </td>
+
+                    <td>
+                        <button class="btn-editar" type="button" aria-label="Editar proveedor"><i class="cil-pencil" aria-hidden="true"></i></button>
+                        <button class="btn-eliminar" type="button" aria-label="Eliminar proveedor"><i class="cil-trash" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <td>Importadora Juan.GD</td>
+                    <td>056-878451-8</td>
+                    <td>809-874-5698</td>
+                    <td>Juan@gmail.com</td>
+                    <td>San Francisco de Macorís</td>
+
+                    <td>
+                        <span class="estado activo">
+                            Activo
+                        </span>
+                    </td>
+
+                    <td>
+                        <button class="btn-editar" type="button" aria-label="Editar proveedor"><i class="cil-pencil" aria-hidden="true"></i></button>
+                        <button class="btn-eliminar" type="button" aria-label="Eliminar proveedor"><i class="cil-trash" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </main>
+
+</div>
+</AdminLayout>
+
+
+
+@code {
+
+}

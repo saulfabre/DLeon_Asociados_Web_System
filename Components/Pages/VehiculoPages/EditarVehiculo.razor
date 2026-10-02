@@ -1,0 +1,56 @@
+@page "/vehiculo/editar"
+@rendermode InteractiveServer
+
+<PageTitle>Editar Vehículo | D'Leon Asociados</PageTitle>
+
+<AdminLayout ActivePage="vehicles">
+<div class="editar-vehiculo-page">
+
+    @* Contenido de edición *@
+    <main class="editar-vehiculo-content">
+        <header class="editar-vehiculo-header">
+            <h1>Editar Vehículo</h1>
+            <a class="editar-vehiculo-back" href="/vehiculos">Volver al inventario</a>
+        </header>
+
+        @* Formulario *@
+        <section class="editar-vehiculo-card">
+            <h2>Información del vehículo</h2>
+            <div class="editar-vehiculo-form">
+                <label>
+                    Marca
+                    <input type="text" value="Toyota" />
+                </label>
+                <label>
+                    Modelo
+                    <input type="text" value="Hilux" />
+                </label>
+                <label>
+                    Año
+                    <input type="number" value="2027" />
+                </label>
+                <label>
+                    Precio
+                    <input type="number" value="84000" />
+                </label>
+                <label>
+                    Tipo de transmisión
+                    <select>
+                        <option>Automática</option>
+                        <option>Manual</option>
+                    </select>
+                </label>
+                <label>
+                    Kilometraje (km)
+                    <input type="number" value="25000" />
+                </label>
+            </div>
+
+            <div class="editar-vehiculo-actions">
+                <a class="editar-vehiculo-cancel" href="/vehiculos">Cancelar</a>
+                <button class="editar-vehiculo-save" type="button">Guardar cambios</button>
+            </div>
+        </section>
+    </main>
+</div>
+</AdminLayout>

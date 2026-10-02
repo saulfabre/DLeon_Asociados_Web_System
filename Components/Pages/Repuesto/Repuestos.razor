@@ -1,0 +1,251 @@
+﻿@page "/Repuestos"
+@rendermode InteractiveServer
+
+<AdminLayout ActivePage="parts">
+<div class="pagina-repuestos">
+
+    <!-- BARRA SUPERIOR -->
+    <header class="header-repuestos">
+
+        <h1>Catálogo de Repuestos</h1>
+
+        <div class="header-derecha">
+            <button class="btn-notificacion" type="button" aria-label="Notificaciones">
+                <i class="cil-bell" aria-hidden="true"></i>
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- CONTENIDO -->
+    <main class="contenido-repuestos">
+
+        <!-- BUSQUEDA Y BOTONES -->
+        <div class="barra-herramientas">
+
+            <input class="buscar-repuesto"
+                   type="text"
+                   placeholder="Buscar repuesto por nombre o código..." />
+
+            <div class="acciones">
+
+                <button class="btn-importar">
+                    <i class="cil-cloud-download" aria-hidden="true"></i> Importar CSV
+                </button>
+
+                <button class="btn-agregar">
+                    <i class="cil-plus" aria-hidden="true"></i> Agregar Repuesto
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- TABLA -->
+        <table class="tabla-repuestos">
+
+            <thead>
+
+                <tr>
+
+                    <th>Nombre Pieza</th>
+
+                    <th>Marca</th>
+
+                    <th>Tipo</th>
+
+                    <th>Tamaño</th>
+
+                    <th>Disponibles</th>
+
+                    <th>Precio Unitario</th>
+
+                    <th>Proveedor</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                <tr>
+
+                    <td class="nombre-pieza">
+                        Filtro de Aceite
+                    </td>
+
+                    <td>
+                        Bosch
+                    </td>
+
+                    <td>
+                        Filtro
+                    </td>
+
+                    <td class="texto-gris">
+                        Estándar
+                    </td>
+
+                    <td class="cantidad baja">
+                        4
+                    </td>
+
+                    <td class="precio">
+                        $12.50
+                    </td>
+
+                    <td class="texto-gris">
+                        Bosch Chile
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="nombre-pieza">
+                        Pastillas de Freno
+                    </td>
+
+                    <td>
+                        Brembo
+                    </td>
+
+                    <td>
+                        Frenos
+                    </td>
+
+                    <td class="texto-gris">
+                        Delantero
+                    </td>
+
+                    <td class="cantidad">
+                        24
+                    </td>
+
+                    <td class="precio">
+                        $45.00
+                    </td>
+
+                    <td class="texto-gris">
+                        Repuestos Global
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="nombre-pieza">
+                        Amortiguador Hidráulico
+                    </td>
+
+                    <td>
+                        Monroe
+                    </td>
+
+                    <td>
+                        Suspensión
+                    </td>
+
+                    <td class="texto-gris">
+                        Universal
+                    </td>
+
+                    <td class="cantidad baja">
+                        2
+                    </td>
+
+                    <td class="precio">
+                        $78.90
+                    </td>
+
+                    <td class="texto-gris">
+                        Distribuidora Sur
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="nombre-pieza">
+                        Batería 12V 75Ah
+                    </td>
+
+                    <td>
+                        Varta
+                    </td>
+
+                    <td>
+                        Eléctrico
+                    </td>
+
+                    <td class="texto-gris">
+                        L3
+                    </td>
+
+                    <td class="cantidad">
+                        15
+                    </td>
+
+                    <td class="precio">
+                        $110.00
+                    </td>
+
+                    <td class="texto-gris">
+                        Varta Import
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="nombre-pieza">
+                        Bujía de Iridio
+                    </td>
+
+                    <td>
+                        NGK
+                    </td>
+
+                    <td>
+                        Motor
+                    </td>
+
+                    <td class="texto-gris">
+                        Universal
+                    </td>
+
+                    <td class="cantidad">
+                        80
+                    </td>
+
+                    <td class="precio">
+                        $6.50
+                    </td>
+
+                    <td class="texto-gris">
+                        Repuestos Global
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </main>
+
+</div>
+</AdminLayout>
+
+
+@code{
+
+}

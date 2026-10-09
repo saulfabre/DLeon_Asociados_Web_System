@@ -1,5 +1,7 @@
 @page "/latest-vehicles"
 @rendermode InteractiveServer
+@inject DLeon_Asociados_Web.Services.VehiculosServices VehiculosServices
+@inject IWebHostEnvironment HostEnvironment
 
 <PageTitle>D'Leon Asociados. Últimos Vehículos</PageTitle>
 
@@ -154,7 +156,9 @@
                     {
                         <article class="vehicle-card">
                             <div class="vehicle-image-container">
-                                <img class="vehicle-image" src="@vehiculo.Imagen" alt="@vehiculo.Nombre" />
+                                <img class="vehicle-image"
+                                     src="@DLeon_Asociados_Web.Services.VehiculoImagenes.ObtenerUrl(vehiculo.Imagen, HostEnvironment.WebRootPath)"
+                                     alt="@vehiculo.NombreCompleto" />
                                 <button class="vehicle-arrow vehicle-arrow-left" type="button" aria-label="Imagen anterior">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                         <path d="m15 18-6-6 6-6" />
@@ -170,7 +174,7 @@
                             </div>
 
                             <div class="vehicle-info">
-                                <h2 class="vehicle-name">@vehiculo.Nombre</h2>
+                                <h2 class="vehicle-name">@vehiculo.NombreCompleto</h2>
                                 <div class="vehicle-specs">
                                     <div class="vehicle-spec">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -229,17 +233,8 @@
 </section>
 
 @code {
-    private List<Vehiculo> Vehiculos = new()
-    {
-        new Vehiculo { Tipo = "Jeepeta", Marca = "BMW", Modelo = "X7", Edicion = "xDrive40i", Anio = 2022, Nombre = "2022 BMW X7 xDrive40i", Precio = 5200000, Combustible = "Gasolina", Millaje = "28,500 Km", Transmision = "Automático", Imagen = "/images/imagesSaul/public/bmw-x7.jpg.jpeg" },
-        new Vehiculo { Tipo = "Sedán", Marca = "Kia", Modelo = "K5", Edicion = "GT-Line", Anio = 2022, Nombre = "2022 Kia K5 GT-Line", Precio = 1450000, Combustible = "Gasolina", Millaje = "24,000 Km", Transmision = "Automático", Imagen = "/images/imagesSaul/public/kia-k5.jpeg" },
-        new Vehiculo { Tipo = "Jeepeta", Marca = "Toyota", Modelo = "4Runner", Edicion = "SR5", Anio = 2022, Nombre = "2022 Toyota 4Runner SR5", Precio = 3850000, Combustible = "Gasolina", Millaje = "32,000 Km", Transmision = "Automático", Imagen = "/images/imagesSaul/public/toyota-4runner.jpeg" },
-        new Vehiculo { Tipo = "Sedán", Marca = "Toyota", Modelo = "Corolla", Edicion = "LE", Anio = 2019, Nombre = "2019 Toyota Corolla LE", Precio = 890000, Combustible = "Gasolina", Millaje = "56,800 Km", Transmision = "Automático", Imagen = "/images/imagesSaul/public/toyota-corolla.webp" },
-        new Vehiculo { Tipo = "Camioneta", Marca = "Toyota", Modelo = "Hilux", Edicion = "SR", Anio = 2022, Nombre = "2022 Toyota Hilux SR", Precio = 1490000, Combustible = "Diésel", Millaje = "18,600 Km", Transmision = "Manual", Imagen = "/images/imagesSaul/public/toyota-hilux.jpg" },
-        new Vehiculo { Tipo = "Camioneta", Marca = "Toyota", Modelo = "Tacoma", Edicion = "SR5", Anio = 2021, Nombre = "2021 Toyota Tacoma SR5", Precio = 1500000, Combustible = "Gasolina", Millaje = "35,000 Km", Transmision = "Automático", Imagen = "/images/imagesSaul/public/toyota-tacoma.webp" }
-    };
-
-    private List<Vehiculo> VehiculosFiltrados = new();
+    private List<DLeon_Asociados_Web.Models.Vehiculos> Vehiculos = new();
+    private List<DLeon_Asociados_Web.Models.Vehiculos> VehiculosFiltrados = new();
     private string TipoSeleccionado { get; set; } = string.Empty;
     private string MarcaSeleccionada { get; set; } = string.Empty;
     private string ModeloSeleccionado { get; set; } = string.Empty;
@@ -249,27 +244,33 @@
     private decimal? PrecioMinimo { get; set; }
     private decimal? PrecioMaximo { get; set; }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        Vehiculos = await VehiculosServices.GetList();
         VehiculosFiltrados = new(Vehiculos);
     }
 
-    private void Buscar()
+    private async Task Buscar()
     {
-        VehiculosFiltrados = Vehiculos
-            .Where(vehiculo =>
-                (string.IsNullOrEmpty(TipoSeleccionado) || vehiculo.Tipo == TipoSeleccionado) &&
-                (string.IsNullOrEmpty(MarcaSeleccionada) || vehiculo.Marca == MarcaSeleccionada) &&
-                (string.IsNullOrEmpty(ModeloSeleccionado) || vehiculo.Modelo == ModeloSeleccionado) &&
-                (string.IsNullOrEmpty(EdicionSeleccionada) || vehiculo.Edicion == EdicionSeleccionada) &&
-                (!AnioDesde.HasValue || vehiculo.Anio >= AnioDesde.Value) &&
-                (!AnioHasta.HasValue || vehiculo.Anio <= AnioHasta.Value) &&
-                (!PrecioMinimo.HasValue || vehiculo.Precio >= PrecioMinimo.Value) &&
-                (!PrecioMaximo.HasValue || vehiculo.Precio <= PrecioMaximo.Value))
-            .ToList();
+        VehiculosFiltrados = await VehiculosServices.GetList(
+            marca: string.IsNullOrWhiteSpace(MarcaSeleccionada) ? null : MarcaSeleccionada,
+            modelo: string.IsNullOrWhiteSpace(ModeloSeleccionado) ? null : ModeloSeleccionado,
+            tipo: string.IsNullOrWhiteSpace(TipoSeleccionado) ? null : TipoSeleccionado,
+            estado: null,
+            anioDesde: AnioDesde,
+            anioHasta: AnioHasta,
+            precioMinimo: PrecioMinimo,
+            precioMaximo: PrecioMaximo);
+
+        if (!string.IsNullOrWhiteSpace(EdicionSeleccionada))
+        {
+            VehiculosFiltrados = VehiculosFiltrados
+                .Where(vehiculo => string.Equals(vehiculo.Edicion, EdicionSeleccionada, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
     }
 
-    private void LimpiarFiltros()
+    private async Task LimpiarFiltros()
     {
         TipoSeleccionado = string.Empty;
         MarcaSeleccionada = string.Empty;
@@ -279,22 +280,8 @@
         AnioHasta = null;
         PrecioMinimo = null;
         PrecioMaximo = null;
+
+        Vehiculos = await VehiculosServices.GetList();
         VehiculosFiltrados = new(Vehiculos);
     }
-
-    private class Vehiculo
-    {
-        public string Tipo { get; set; } = string.Empty;
-        public string Marca { get; set; } = string.Empty;
-        public string Modelo { get; set; } = string.Empty;
-        public string Edicion { get; set; } = string.Empty;
-        public int Anio { get; set; }
-        public string Nombre { get; set; } = string.Empty;
-        public decimal Precio { get; set; }
-        public string Combustible { get; set; } = string.Empty;
-        public string Millaje { get; set; } = string.Empty;
-        public string Transmision { get; set; } = string.Empty;
-        public string Imagen { get; set; } = string.Empty;
-    }
 }
-

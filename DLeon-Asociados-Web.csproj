@@ -7,6 +7,7 @@
     <RootNamespace>DLeon_Asociados_Web</RootNamespace>
     <AssemblyName>$(AssemblyName.Replace(' ', '_'))</AssemblyName>
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+    <UserSecretsId>DLeon-Asociados-Web-Local</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

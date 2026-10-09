@@ -1,10 +1,19 @@
 using DLeon_Asociados_Web.Components;
+using DLeon_Asociados_Web.Data;
+using DLeon_Asociados_Web.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddDbContextFactory<Contexto>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("SqlConStr")));
+
+builder.Services.AddScoped<VehiculosServices>();
 
 var app = builder.Build();
 
@@ -17,6 +26,7 @@ if (!app.Environment.IsDevelopment())
 }
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
 app.UseAntiforgery();
 

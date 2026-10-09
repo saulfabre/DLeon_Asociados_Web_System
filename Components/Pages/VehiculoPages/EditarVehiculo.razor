@@ -1,5 +1,9 @@
 @page "/vehiculo/editar"
+@using DLeon_Asociados_Web.Components.Layout
 @rendermode InteractiveServer
+@inject DLeon_Asociados_Web.Services.VehiculosServices VehiculosServices
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
 
 <PageTitle>Editar Vehículo | D'Leon Asociados</PageTitle>
 
@@ -19,38 +23,192 @@
             <div class="editar-vehiculo-form">
                 <label>
                     Marca
-                    <input type="text" value="Toyota" />
+                    <input type="text" @bind="Marca" />
                 </label>
                 <label>
                     Modelo
-                    <input type="text" value="Hilux" />
+                    <input type="text" @bind="Modelo" />
+                </label>
+                <label>
+                    Edición
+                    <input type="text" @bind="Edicion" />
                 </label>
                 <label>
                     Año
-                    <input type="number" value="2027" />
+                    <input type="number" @bind="Anio" />
                 </label>
                 <label>
                     Precio
-                    <input type="number" value="84000" />
+                    <input type="number" step="0.01" @bind="Precio" />
+                </label>
+                <label>
+                    Estado
+                    <select @bind="Estado">
+                        <option value="">Seleccionar estado</option>
+                        <option value="Disponible">Disponible</option>
+                        <option value="Reservado">Reservado</option>
+                        <option value="Vendido">Vendido</option>
+                    </select>
+                </label>
+                <label>
+                    Tipo de vehículo
+                    <select @bind="Tipo">
+                        <option value="">Seleccionar tipo</option>
+                        <option value="Sedán">Sedán</option>
+                        <option value="SUV">SUV</option>
+                        <option value="Pick-up">Pick-up</option>
+                        <option value="Coupé">Coupé</option>
+                        <option value="Camioneta">Camioneta</option>
+                        <option value="Van">Van</option>
+                        <option value="Jeepeta">Jeepeta</option>
+                    </select>
+                </label>
+                <label>
+                    Color
+                    <input type="text" @bind="Color" />
+                </label>
+                <label>
+                    Combustible
+                    <select @bind="Combustible">
+                        <option value="">Seleccionar combustible</option>
+                        <option value="Gasolina">Gasolina</option>
+                        <option value="Diésel">Diésel</option>
+                        <option value="Híbrido">Híbrido</option>
+                        <option value="Eléctrico">Eléctrico</option>
+                    </select>
                 </label>
                 <label>
                     Tipo de transmisión
-                    <select>
-                        <option>Automática</option>
-                        <option>Manual</option>
+                    <select @bind="Transmision">
+                        <option value="">Seleccionar transmisión</option>
+                        <option value="Automática">Automática</option>
+                        <option value="Automático">Automático</option>
+                        <option value="Manual">Manual</option>
                     </select>
                 </label>
                 <label>
                     Kilometraje (km)
-                    <input type="number" value="25000" />
+                    <input type="number" min="0" @bind="Kilometraje" />
+                </label>
+                <label>
+                    Descripción del vehículo
+                    <textarea @bind="Descripcion" rows="5"></textarea>
+                </label>
+                <label>
+                    URL de imagen
+                    <input type="text"
+                           @bind="Imagen"
+                           placeholder="https://... o /images/vehiculos/imagen.jpg" />
                 </label>
             </div>
 
             <div class="editar-vehiculo-actions">
                 <a class="editar-vehiculo-cancel" href="/vehiculos">Cancelar</a>
-                <button class="editar-vehiculo-save" type="button">Guardar cambios</button>
+                <button class="editar-vehiculo-save" type="button" @onclick="GuardarCambios">Guardar cambios</button>
             </div>
         </section>
     </main>
 </div>
 </AdminLayout>
+
+@code {
+    [SupplyParameterFromQuery(Name = "id")]
+    public int? VehiculoId { get; set; }
+
+    private DLeon_Asociados_Web.Models.Vehiculos? VehiculoActual;
+    private string Marca { get; set; } = string.Empty;
+    private string Modelo { get; set; } = string.Empty;
+    private string Edicion { get; set; } = string.Empty;
+    private int? Anio { get; set; }
+    private decimal? Precio { get; set; }
+    private string Estado { get; set; } = string.Empty;
+    private string Tipo { get; set; } = string.Empty;
+    private string Color { get; set; } = string.Empty;
+    private string Combustible { get; set; } = string.Empty;
+    private string Transmision { get; set; } = string.Empty;
+    private int? Kilometraje { get; set; }
+    private string Descripcion { get; set; } = string.Empty;
+    private string Imagen { get; set; } = string.Empty;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!VehiculoId.HasValue)
+        {
+            Navigation.NavigateTo("/vehiculos");
+            return;
+        }
+
+        VehiculoActual = await VehiculosServices.Buscar(VehiculoId.Value);
+        if (VehiculoActual is null)
+        {
+            Navigation.NavigateTo("/vehiculos");
+            return;
+        }
+
+        Marca = VehiculoActual.Marca;
+        Modelo = VehiculoActual.Modelo;
+        Edicion = VehiculoActual.Edicion ?? string.Empty;
+        Anio = VehiculoActual.Anio;
+        Precio = VehiculoActual.Precio;
+        Estado = VehiculoActual.Estado;
+        Tipo = VehiculoActual.Tipo;
+        Color = VehiculoActual.Color ?? string.Empty;
+        Combustible = VehiculoActual.Combustible ?? string.Empty;
+        Transmision = VehiculoActual.Transmision ?? string.Empty;
+        Kilometraje = VehiculoActual.Kilometraje;
+        Descripcion = VehiculoActual.Descripcion ?? string.Empty;
+        Imagen = VehiculoActual.Imagen ?? string.Empty;
+    }
+
+    private async Task GuardarCambios()
+    {
+        if (VehiculoActual is null ||
+            string.IsNullOrWhiteSpace(Marca) ||
+            string.IsNullOrWhiteSpace(Modelo) ||
+            string.IsNullOrWhiteSpace(Estado) ||
+            string.IsNullOrWhiteSpace(Tipo) ||
+            !Anio.HasValue ||
+            Anio <= 0 ||
+            !Precio.HasValue ||
+            Precio < 0 ||
+            Kilometraje < 0)
+        {
+            await JS.InvokeVoidAsync(
+                "alert",
+                "Completa los campos obligatorios del vehículo con valores válidos.");
+            return;
+        }
+
+        VehiculoActual.Marca = Marca.Trim();
+        VehiculoActual.Modelo = Modelo.Trim();
+        VehiculoActual.Edicion = string.IsNullOrWhiteSpace(Edicion) ? null : Edicion.Trim();
+        VehiculoActual.Anio = Anio.Value;
+        VehiculoActual.Precio = Precio.Value;
+        VehiculoActual.Estado = Estado;
+        VehiculoActual.Tipo = Tipo;
+        VehiculoActual.Color = string.IsNullOrWhiteSpace(Color) ? null : Color.Trim();
+        VehiculoActual.Combustible = string.IsNullOrWhiteSpace(Combustible) ? null : Combustible;
+        VehiculoActual.Transmision = string.IsNullOrWhiteSpace(Transmision) ? null : Transmision;
+        VehiculoActual.Kilometraje = Kilometraje;
+        VehiculoActual.Descripcion = string.IsNullOrWhiteSpace(Descripcion) ? null : Descripcion.Trim();
+        VehiculoActual.Imagen = string.IsNullOrWhiteSpace(Imagen) ? null : Imagen.Trim();
+
+        try
+        {
+            var actualizado = await VehiculosServices.Modificar(VehiculoActual);
+            if (!actualizado)
+            {
+                await JS.InvokeVoidAsync("alert", "El vehículo ya no existe en el inventario.");
+                Navigation.NavigateTo("/vehiculos");
+                return;
+            }
+        }
+        catch (InvalidOperationException ex)
+        {
+            await JS.InvokeVoidAsync("alert", ex.Message);
+            return;
+        }
+
+        Navigation.NavigateTo("/vehiculos");
+    }
+}

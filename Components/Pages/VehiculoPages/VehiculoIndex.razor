@@ -1,5 +1,11 @@
 @page "/vehiculos"
+@using DLeon_Asociados_Web.Components.Layout
+@using DLeon_Asociados_Web.Models
+@using DLeon_Asociados_Web.Services
 @rendermode InteractiveServer
+@inject VehiculosServices VehiculosServices
+@inject IWebHostEnvironment HostEnvironment
+@inject IJSRuntime JS
 
 <PageTitle>Inventario de Vehículos | D'Leon Asociados</PageTitle>
 
@@ -9,35 +15,29 @@
     <main class="contenido">
 
         <!-- BARRA SUPERIOR -->
-
         <header class="barra-superior">
-
             <div class="titulo">
                 Inventario de Vehículos
             </div>
 
-                 <div>
+            <div>
                 <button class="notificacion" type="button" aria-label="Notificaciones">
                     <i class="cil-bell" aria-hidden="true"></i>
                 </button>
-
             </div>
-
         </header>
 
-
         <!-- CONTENIDO -->
-
         <div class="contenido-principal">
-
-
             <!-- BOTONES -->
-
             <div class="acciones">
-
                 <label class="busqueda-catalogo">
                     <i class="cil-search" aria-hidden="true"></i>
-                    <input class="busqueda" type="search" placeholder="Buscar vehículo, marca o modelo..." />
+                    <input class="busqueda"
+                           type="search"
+                           placeholder="Buscar vehículo, marca o modelo..."
+                           value="@TextoBusqueda"
+                           @oninput="CambiarBusqueda" />
                 </label>
 
                 <a class="btn-agregar" href="/vehiculo/agregar">
@@ -47,556 +47,107 @@
                 <button class="btn-exportar">
                     <i class="cil-cloud-upload" aria-hidden="true"></i> Exportar Excel
                 </button>
-
             </div>
-
 
             <!-- FILTROS -->
-
             <div class="filtros">
-
                 <div class="filtro">
-
-                    <label>
-                        Marca
-                    </label>
-
-                    <select>
-
-                        <option>
-                            Todas las marcas
-                        </option>
-
-                        <option>
-                            Toyota
-                        </option>
-
-                        <option>
-                            BMW
-                        </option>
-
-                        <option>
-                            Kia
-                        </option>
-
+                    <label>Marca</label>
+                    <select @bind="MarcaFiltro" @bind:after="AplicarFiltros">
+                        <option value="">Todas las marcas</option>
+                        @foreach (var marca in Vehiculos.Select(v => v.Marca).Distinct().OrderBy(v => v))
+                        {
+                            <option value="@marca">@marca</option>
+                        }
                     </select>
-
                 </div>
 
-
                 <div class="filtro">
-
-                    <label>
-                        Estado
-                    </label>
-
-                    <select>
-
-                        <option>
-                            Disponible / Reservado
-                        </option>
-
-                        <option>
-                            Disponible
-                        </option>
-
-                        <option>
-                            Reservado
-                        </option>
-
+                    <label>Estado</label>
+                    <select @bind="EstadoFiltro" @bind:after="AplicarFiltros">
+                        <option value="">Disponible / Reservado</option>
+                        <option value="Disponible">Disponible</option>
+                        <option value="Reservado">Reservado</option>
+                        <option value="Vendido">Vendido</option>
                     </select>
-
                 </div>
 
-
                 <div class="filtro">
-
-                    <label>
-                        Rango de Año
-                    </label>
-
-                    <select>
-
-                        <option>
-                            2020 - 2027
-                        </option>
-
-                        <option>
-                            2020 - 2023
-                        </option>
-
-                        <option>
-                            2024 - 2027
-                        </option>
-
+                    <label>Rango de Año</label>
+                    <select @bind="RangoAnio" @bind:after="AplicarFiltros">
+                        <option value="">2020 - 2027</option>
+                        <option value="2020-2023">2020 - 2023</option>
+                        <option value="2024-2027">2024 - 2027</option>
                     </select>
-
                 </div>
 
-
                 <div class="filtro">
-
-                    <label>
-                        Rango de Precio
-                    </label>
-
-                    <select>
-
-                        <option>
-                            Cualquier precio
-                        </option>
-
-                        <option>
-                            Menos de $30,000
-                        </option>
-
-                        <option>
-                            $30,000 - $60,000
-                        </option>
-
-                        <option>
-                            Más de $60,000
-                        </option>
-
+                    <label>Rango de Precio</label>
+                    <select @bind="RangoPrecio" @bind:after="AplicarFiltros">
+                        <option value="">Cualquier precio</option>
+                        <option value="0-30000">Menos de $30,000</option>
+                        <option value="30000-60000">$30,000 - $60,000</option>
+                        <option value="60000+">Más de $60,000</option>
                     </select>
-
                 </div>
-
             </div>
-
 
             <!-- ========================================
                  VEHICULOS
                  ======================================== -->
-
             <div class="vehiculos">
+                @foreach (var vehiculo in VehiculosFiltrados)
+                {
+                    var imagen = VehiculoImagenes.ObtenerUrl(vehiculo.Imagen, HostEnvironment.WebRootPath);
+                    <div class="vehiculo">
+                        <img class="imagen-vehiculo"
+                             src="@imagen"
+                             alt="@vehiculo.NombreCompleto"
+                             @onclick="() => AbrirModal(vehiculo, imagen)" />
 
-
-                <!-- TOYOTA HILUX -->
-
-                <div class="vehiculo">
-
-                    <img class="imagen-vehiculo"
-                         src="/images/vehiculos/toyota-hilux.jpg"
-                         alt="Toyota Hilux"
-                         @onclick='() => AbrirModal(
-                             "Toyota",
-                             "Hilux",
-                             "2027",
-                             "Disponible",
-                             "La Toyota Hilux Travo-e 2027 es una camioneta pick-up 100% eléctrica (BEV) que maximiza la resistencia tradicional de la línea Hilux con tecnología de movilidad sostenible.",
-                             "/images/vehiculos/toyota-hilux.jpg",
-                             ToyotaHiluxImagenes
-                         )' />
-
-                    <div class="informacion">
-
-                        <div class="datos">
-
-                            <div>
-
-                                <span class="marca">
-                                    Toyota Hilux
+                        <div class="informacion">
+                            <div class="datos">
+                                <div>
+                                    <span class="marca">
+                                        @vehiculo.Marca @vehiculo.Modelo
+                                    </span>
+                                    <span class="ano">
+                                        @vehiculo.Anio
+                                    </span>
+                                </div>
+                                <span class="precio">
+                                    $@vehiculo.Precio.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("en-US"))
                                 </span>
-
-                                <span class="ano">
-                                    2027
-                                </span>
-
                             </div>
 
-                            <span class="precio">
-                                $84,000
-                            </span>
-
-                        </div>
-
-
-                        <div class="parte-inferior">
-
-                            <span class="disponible">
-                                Disponible
-                            </span>
-
-                            <span class="combustible">
-                                Gasolina
-                            </span>
-
-                            <div class="botones">
-
-                                <a class="btn-editar" href="/vehiculo/editar?vehiculo=Toyota-Hilux" aria-label="Editar Toyota Hilux">
-                                    <i class="cil-pencil" aria-hidden="true"></i>
-                                </a>
-
-                                <button class="btn-eliminar" type="button" aria-label="Eliminar Toyota Hilux">
-                                    <i class="cil-trash" aria-hidden="true"></i>
-                                </button>
-
+                            <div class="parte-inferior">
+                                <span class="disponible">
+                                    @vehiculo.Estado
+                                </span>
+                                <span class="combustible">
+                                    @vehiculo.Combustible
+                                </span>
+                                <div class="botones">
+                                    <a class="btn-editar"
+                                       href="@($"/vehiculo/editar?id={vehiculo.Id}")"
+                                       aria-label="@($"Editar {vehiculo.NombreCompleto}")">
+                                        <i class="cil-pencil" aria-hidden="true"></i>
+                                    </a>
+                                    <button class="btn-eliminar"
+                                            type="button"
+                                            aria-label="@($"Eliminar {vehiculo.NombreCompleto}")"
+                                            @onclick="() => EliminarVehiculo(vehiculo)">
+                                        <i class="cil-trash" aria-hidden="true"></i>
+                                    </button>
+                                </div>
                             </div>
-
                         </div>
-
                     </div>
-
-                </div>
-
-
-                <!-- TOYOTA 4RUNNER -->
-
-                <div class="vehiculo">
-
-                    <img class="imagen-vehiculo"
-                         src="/images/vehiculos/toyota-4runner.jpg"
-                         alt="Toyota 4Runner"
-                         @onclick='() => AbrirModal(
-                             "Toyota",
-                             "4Runner",
-                             "2025",
-                             "Disponible",
-                             "Toyota 4Runner modelo 2025. Vehículo disponible para venta.",
-                             "/images/vehiculos/toyota-4runner.jpg",
-                             Toyota4RunnerImagenes
-                         )' />
-
-                    <div class="informacion">
-
-                        <div class="datos">
-
-                            <div>
-
-                                <span class="marca">
-                                    Toyota 4Runner
-                                </span>
-
-                                <span class="ano">
-                                    2025
-                                </span>
-
-                            </div>
-
-                            <span class="precio">
-                                $70,000
-                            </span>
-
-                        </div>
-
-
-                        <div class="parte-inferior">
-
-                            <span class="disponible">
-                                Disponible
-                            </span>
-
-                            <span class="combustible">
-                                Gasolina
-                            </span>
-
-                            <div class="botones">
-
-                                <a class="btn-editar" href="/vehiculo/editar?vehiculo=Toyota-4Runner" aria-label="Editar Toyota 4Runner">
-                                    <i class="cil-pencil" aria-hidden="true"></i>
-                                </a>
-
-                                <button class="btn-eliminar" type="button" aria-label="Eliminar Toyota 4Runner">
-                                    <i class="cil-trash" aria-hidden="true"></i>
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- TOYOTA TACOMA -->
-
-                <div class="vehiculo">
-
-                    <img class="imagen-vehiculo"
-                         src="/images/vehiculos/toyota-tacoma.webp"
-                         alt="Toyota Tacoma"
-                         @onclick='() => AbrirModal(
-                             "Toyota",
-                             "Tacoma",
-                             "2022",
-                             "Disponible",
-                             "Toyota Tacoma modelo 2022. Vehículo disponible para venta.",
-                             "/images/vehiculos/toyota-tacoma.webp",
-                             ToyotaTacomaImagenes
-                         )' />
-
-                    <div class="informacion">
-
-                        <div class="datos">
-
-                            <div>
-
-                                <span class="marca">
-                                    Toyota Tacoma
-                                </span>
-
-                                <span class="ano">
-                                    2022
-                                </span>
-
-                            </div>
-
-                            <span class="precio">
-                                $38,900
-                            </span>
-
-                        </div>
-
-
-                        <div class="parte-inferior">
-
-                            <span class="disponible">
-                                Disponible
-                            </span>
-
-                            <span class="combustible">
-                                Gasolina
-                            </span>
-
-                            <div class="botones">
-
-                                <a class="btn-editar" href="/vehiculo/editar?vehiculo=Toyota-Tacoma" aria-label="Editar Toyota Tacoma">
-                                    <i class="cil-pencil" aria-hidden="true"></i>
-                                </a>
-
-                                <button class="btn-eliminar" type="button" aria-label="Eliminar Toyota Tacoma">
-                                    <i class="cil-trash" aria-hidden="true"></i>
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- TOYOTA COROLLA -->
-
-                <div class="vehiculo">
-
-                    <img class="imagen-vehiculo"
-                         src="/images/vehiculos/toyota-corolla.WEBP"
-                         alt="Toyota Corolla"
-                         @onclick='() => AbrirModal(
-                             "Toyota",
-                             "Corolla",
-                             "2023",
-                             "Disponible",
-                             "Toyota Corolla modelo 2023. Vehículo disponible para venta.",
-                             "/images/vehiculos/toyota-corolla.webp",
-                             ToyotaCorollaImagenes
-                         )' />
-
-                    <div class="informacion">
-
-                        <div class="datos">
-
-                            <div>
-
-                                <span class="marca">
-                                    Toyota Corolla
-                                </span>
-
-                                <span class="ano">
-                                    2023
-                                </span>
-
-                            </div>
-
-                            <span class="precio">
-                                $25,500
-                            </span>
-
-                        </div>
-
-
-                        <div class="parte-inferior">
-
-                            <span class="disponible">
-                                Disponible
-                            </span>
-
-                            <span class="combustible">
-                                Gasolina
-                            </span>
-
-                            <div class="botones">
-
-                                <a class="btn-editar" href="/vehiculo/editar?vehiculo=Toyota-Corolla" aria-label="Editar Toyota Corolla">
-                                    <i class="cil-pencil" aria-hidden="true"></i>
-                                </a>
-
-                                <button class="btn-eliminar" type="button" aria-label="Eliminar Toyota Corolla">
-                                    <i class="cil-trash" aria-hidden="true"></i>
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- BMW X7 -->
-
-                <div class="vehiculo">
-
-                    <img class="imagen-vehiculo"
-                         src="/images/vehiculos/bmw-x7.jpg"
-                         alt="BMW X7"
-                         @onclick='() => AbrirModal(
-                             "BMW",
-                             "X7",
-                             "2023",
-                             "Disponible",
-                             "BMW X7 modelo 2023. Vehículo disponible para venta.",
-                             "/images/vehiculos/bmw-x7.jpg",
-                             BmwX7Imagenes
-                         )' />
-
-                    <div class="informacion">
-
-                        <div class="datos">
-
-                            <div>
-
-                                <span class="marca">
-                                    BMW X7
-                                </span>
-
-                                <span class="ano">
-                                    2023
-                                </span>
-
-                            </div>
-
-                            <span class="precio">
-                                $115,200
-                            </span>
-
-                        </div>
-
-
-                        <div class="parte-inferior">
-
-                            <span class="disponible">
-                                Disponible
-                            </span>
-
-                            <span class="combustible">
-                                Gasolina
-                            </span>
-
-                            <div class="botones">
-
-                                <a class="btn-editar" href="/vehiculo/editar?vehiculo=BMW-X7" aria-label="Editar BMW X7">
-                                    <i class="cil-pencil" aria-hidden="true"></i>
-                                </a>
-
-                                <button class="btn-eliminar" type="button" aria-label="Eliminar BMW X7">
-                                    <i class="cil-trash" aria-hidden="true"></i>
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- KIA K5 -->
-
-                <div class="vehiculo">
-
-                    <img class="imagen-vehiculo"
-                         src="/images/vehiculos/kia-k5.jpeg"
-                         alt="Kia K5"
-                         @onclick='() => AbrirModal(
-                             "Kia",
-                             "K5",
-                             "2023",
-                             "Disponible",
-                             "Kia K5 modelo 2023. Vehículo disponible para venta.",
-                             "/images/vehiculos/kia-k5.jpeg",
-                             KiaK5Imagenes
-                         )' />
-
-                    <div class="informacion">
-
-                        <div class="datos">
-
-                            <div>
-
-                                <span class="marca">
-                                    Kia K5
-                                </span>
-
-                                <span class="ano">
-                                    2023
-                                </span>
-
-                            </div>
-
-                            <span class="precio">
-                                $15,000
-                            </span>
-
-                        </div>
-
-
-                        <div class="parte-inferior">
-
-                            <span class="disponible">
-                                Disponible
-                            </span>
-
-                            <span class="combustible">
-                                Gas
-                            </span>
-
-                            <div class="botones">
-
-                                <a class="btn-editar" href="/vehiculo/editar?vehiculo=Kia-K5" aria-label="Editar Kia K5">
-                                    <i class="cil-pencil" aria-hidden="true"></i>
-                                </a>
-
-                                <button class="btn-eliminar" type="button" aria-label="Eliminar Kia K5">
-                                    <i class="cil-trash" aria-hidden="true"></i>
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
+                }
             </div>
-
         </div>
-
     </main>
-
 </div>
-
-
-<!-- ========================================
-     MODAL DE DETALLE
-     ======================================== -->
 
 <VehiculoDetalleModal
     Visible="@MostrarModal"
@@ -608,81 +159,121 @@
     Descripcion="@DescripcionSeleccionada"
     ImagenPrincipal="@ImagenSeleccionada"
     Imagenes="@ImagenesSeleccionadas" />
-
 </AdminLayout>
 
-
 @code {
+    private List<Vehiculos> Vehiculos = new();
+    private List<Vehiculos> VehiculosFiltrados = new();
+    private string TextoBusqueda = string.Empty;
+    private string MarcaFiltro = string.Empty;
+    private string EstadoFiltro = string.Empty;
+    private string RangoAnio = string.Empty;
+    private string RangoPrecio = string.Empty;
 
-    private bool MostrarModal = false;
-
-    private string MarcaSeleccionada = "";
-    private string ModeloSeleccionado = "";
-    private string AnioSeleccionado = "";
-    private string EstadoSeleccionado = "";
-    private string DescripcionSeleccionada = "";
-    private string ImagenSeleccionada = "";
+    private bool MostrarModal;
+    private string MarcaSeleccionada = string.Empty;
+    private string ModeloSeleccionado = string.Empty;
+    private string AnioSeleccionado = string.Empty;
+    private string EstadoSeleccionado = string.Empty;
+    private string DescripcionSeleccionada = string.Empty;
+    private string ImagenSeleccionada = string.Empty;
     private string[] ImagenesSeleccionadas = Array.Empty<string>();
 
-    private readonly string[] ToyotaHiluxImagenes =
+    protected override async Task OnInitializedAsync()
     {
-        "/images/vehiculos/toyota-hilux.jpg",
-        "/images/vehiculos/toyota-hilux-frente.jpeg",
-        "/images/vehiculos/toyota-hilux-lateral.jpeg",
-        "/images/vehiculos/toyota-hilux-trasera.jpeg",
-        "/images/vehiculos/toyota-hilux-interior.jpeg"
-    };
-
-    private readonly string[] Toyota4RunnerImagenes =
-    {
-        "/images/vehiculos/toyota-4runner.jpg"
-    };
-
-    private readonly string[] ToyotaTacomaImagenes =
-    {
-        "/images/vehiculos/toyota-tacoma.webp"
-    };
-
-    private readonly string[] ToyotaCorollaImagenes =
-    {
-        "/images/vehiculos/toyota-corolla.webp"
-    };
-
-    private readonly string[] BmwX7Imagenes =
-    {
-        "/images/vehiculos/bmw-x7.jpg"
-    };
-
-    private readonly string[] KiaK5Imagenes =
-    {
-        "/images/vehiculos/kia-k5.jpeg"
-    };
-
-
-    private void AbrirModal(
-        string marca,
-        string modelo,
-        string anio,
-        string estado,
-        string descripcion,
-        string imagen,
-        string[] imagenes)
-    {
-        MarcaSeleccionada = marca;
-        ModeloSeleccionado = modelo;
-        AnioSeleccionado = anio;
-        EstadoSeleccionado = estado;
-        DescripcionSeleccionada = descripcion;
-        ImagenSeleccionada = imagen;
-        ImagenesSeleccionadas = imagenes;
-
-        MostrarModal = true;
+        await RecargarVehiculos();
     }
 
+    private async Task RecargarVehiculos()
+    {
+        Vehiculos = await VehiculosServices.GetList();
+        AplicarFiltros();
+    }
+
+    private void CambiarBusqueda(ChangeEventArgs args)
+    {
+        TextoBusqueda = args.Value?.ToString() ?? string.Empty;
+        AplicarFiltros();
+    }
+
+    private void AplicarFiltros()
+    {
+        var query = Vehiculos.AsEnumerable();
+
+        if (!string.IsNullOrWhiteSpace(TextoBusqueda))
+        {
+            query = query.Where(v =>
+                v.NombreCompleto.Contains(TextoBusqueda, StringComparison.OrdinalIgnoreCase) ||
+                v.Marca.Contains(TextoBusqueda, StringComparison.OrdinalIgnoreCase) ||
+                v.Modelo.Contains(TextoBusqueda, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrWhiteSpace(MarcaFiltro))
+        {
+            query = query.Where(v => v.Marca == MarcaFiltro);
+        }
+
+        if (!string.IsNullOrWhiteSpace(EstadoFiltro))
+        {
+            query = query.Where(v => v.Estado == EstadoFiltro);
+        }
+
+        if (RangoAnio == "2020-2023")
+        {
+            query = query.Where(v => v.Anio is >= 2020 and <= 2023);
+        }
+        else if (RangoAnio == "2024-2027")
+        {
+            query = query.Where(v => v.Anio is >= 2024 and <= 2027);
+        }
+
+        if (RangoPrecio == "0-30000")
+        {
+            query = query.Where(v => v.Precio < 30000);
+        }
+        else if (RangoPrecio == "30000-60000")
+        {
+            query = query.Where(v => v.Precio is >= 30000 and <= 60000);
+        }
+        else if (RangoPrecio == "60000+")
+        {
+            query = query.Where(v => v.Precio > 60000);
+        }
+
+        VehiculosFiltrados = query.ToList();
+    }
+
+    private async Task EliminarVehiculo(Vehiculos vehiculo)
+    {
+        var confirmar = await JS.InvokeAsync<bool>(
+            "confirm",
+            $"¿Deseas eliminar {vehiculo.NombreCompleto}?");
+
+        if (!confirmar)
+        {
+            return;
+        }
+
+        await VehiculosServices.Eliminar(vehiculo.Id);
+        await RecargarVehiculos();
+    }
+
+    private void AbrirModal(Vehiculos vehiculo, string imagen)
+    {
+        MarcaSeleccionada = vehiculo.Marca;
+        ModeloSeleccionado = vehiculo.Modelo;
+        AnioSeleccionado = vehiculo.Anio.ToString();
+        EstadoSeleccionado = vehiculo.Estado;
+        DescripcionSeleccionada = vehiculo.Descripcion ?? string.Empty;
+        ImagenSeleccionada = imagen;
+        ImagenesSeleccionadas = string.IsNullOrWhiteSpace(imagen)
+            ? Array.Empty<string>()
+            : new[] { imagen };
+        MostrarModal = true;
+    }
 
     private void ModalCerrado(bool valor)
     {
         MostrarModal = valor;
     }
-
 }

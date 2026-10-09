@@ -66,7 +66,8 @@
 }
 
 .editar-vehiculo-form input,
-.editar-vehiculo-form select {
+.editar-vehiculo-form select,
+.editar-vehiculo-form textarea {
     width: 100%;
     height: 40px;
     padding: 0 12px;
@@ -78,8 +79,16 @@
     font-size: 0.875rem;
 }
 
+.editar-vehiculo-form textarea {
+    min-height: 100px;
+    padding: 10px 12px;
+    resize: vertical;
+    font-family: inherit;
+}
+
 .editar-vehiculo-form input:focus,
-.editar-vehiculo-form select:focus {
+.editar-vehiculo-form select:focus,
+.editar-vehiculo-form textarea:focus {
     outline: 2px solid #dbeafe;
     border-color: #2563eb;
 }

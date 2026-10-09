@@ -1,5 +1,9 @@
 @page "/vehiculo/agregar"
+@using DLeon_Asociados_Web.Components.Layout
 @rendermode InteractiveServer
+@inject DLeon_Asociados_Web.Services.VehiculosServices VehiculosServices
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
 
 <PageTitle>Agregar Vehículo | D'Leon Asociados</PageTitle>
 
@@ -141,6 +145,16 @@
 
                             </div>
 
+                            <div class="campo">
+                                <label for="edicion">
+                                    Edición
+                                </label>
+                                <input id="edicion"
+                                       type="text"
+                                       @bind="Edicion"
+                                       placeholder="Ej. SR5" />
+                            </div>
+
 
                             <!-- Año -->
                             <div class="campo">
@@ -210,7 +224,6 @@
                                 </select>
 
                             </div>
-
 
                             <!-- Tipo -->
                             <div class="campo">
@@ -402,24 +415,24 @@
                                 <i class="cil-image" aria-hidden="true"></i>
                             </div>
 
-                            <h4>Agregar imagen</h4>
+                            <h4>URL de imagen</h4>
 
                             <p>
-                                Selecciona una imagen del vehículo
+                                Pega la URL de la imagen del vehículo
                             </p>
 
-                            <label class="btn-subir">
+                            <div class="campo campo-completo">
+                                <label for="imagen-url">URL de imagen</label>
+                                <input type="text"
+                                       id="imagen-url"
+                                       @bind="ImagenUrl"
+                                       placeholder="https://... o /images/vehiculos/imagen.jpg" />
+                            </div>
 
-                                Seleccionar imagen
-
-                                <InputFile OnChange="SeleccionarImagen" />
-
-                            </label>
-
-                            @if (!string.IsNullOrEmpty(NombreImagen))
+                            @if (!string.IsNullOrWhiteSpace(ImagenUrl))
                             {
                                 <div class="imagen-seleccionada">
-                                    <i class="cil-check-circle" aria-hidden="true"></i> @NombreImagen
+                                    <i class="cil-check-circle" aria-hidden="true"></i> @ImagenUrl
                                 </div>
                             }
 
@@ -470,6 +483,7 @@
     private decimal? Precio;
     private string Estado = "";
     private string Tipo = "";
+    private string Edicion = "";
 
     private string Color = "";
     private string Combustible = "";
@@ -478,22 +492,55 @@
 
     private string Descripcion = "";
 
-    private string NombreImagen = "";
+    private string ImagenUrl = string.Empty;
 
 
-    private void SeleccionarImagen(
-        Microsoft.AspNetCore.Components.Forms.InputFileChangeEventArgs e)
+    private async Task GuardarVehiculo()
     {
-        NombreImagen = e.File.Name;
-    }
+        if (string.IsNullOrWhiteSpace(Marca) ||
+            string.IsNullOrWhiteSpace(Modelo) ||
+            string.IsNullOrWhiteSpace(Estado) ||
+            string.IsNullOrWhiteSpace(Tipo) ||
+            !Anio.HasValue ||
+            !Precio.HasValue ||
+            Precio.Value < 0)
+        {
+            await JS.InvokeVoidAsync(
+                "alert",
+                "Completa los campos obligatorios del vehículo con valores válidos.");
+            return;
+        }
 
+        var vehiculo = new DLeon_Asociados_Web.Models.Vehiculos
+        {
+            Marca = Marca,
+            Modelo = Modelo,
+            Anio = Anio.Value,
+            Precio = Precio.Value,
+            Estado = Estado,
+            Tipo = Tipo,
+            Color = Color,
+            Combustible = Combustible,
+            Transmision = Transmision,
+            Kilometraje = Kilometraje,
+            Descripcion = Descripcion,
+            Imagen = string.IsNullOrWhiteSpace(ImagenUrl) ? null : ImagenUrl.Trim(),
+            Nombre = $"{Marca} {Modelo} {(!string.IsNullOrWhiteSpace(Edicion) ? Edicion : string.Empty)}".Trim(),
+            FechaPublicacion = DateTime.UtcNow,
+            FechaCreacion = DateTime.UtcNow
+        };
 
-    private void GuardarVehiculo()
-    {
-        // Aquí posteriormente conectaremos
-        // el formulario con la base de datos.
+        try
+        {
+            await VehiculosServices.Insertar(vehiculo);
+        }
+        catch (InvalidOperationException ex)
+        {
+            await JS.InvokeVoidAsync("alert", ex.Message);
+            return;
+        }
 
-        Console.WriteLine("Vehículo guardado.");
+        Navigation.NavigateTo("/vehiculos");
     }
 
 }

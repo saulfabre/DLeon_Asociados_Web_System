@@ -1,4 +1,4 @@
-using DLeon_Asociados_Web.Data;
+using DLeon_Asociados_Web.Context;
 using DLeon_Asociados_Web.Models;
 using Microsoft.EntityFrameworkCore;
 

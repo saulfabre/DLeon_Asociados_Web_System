@@ -1,5 +1,5 @@
 using DLeon_Asociados_Web.Components;
-using DLeon_Asociados_Web.Data;
+using DLeon_Asociados_Web.Context;
 using DLeon_Asociados_Web.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +14,7 @@ builder.Services.AddDbContextFactory<Contexto>(options =>
         builder.Configuration.GetConnectionString("SqlConStr")));
 
 builder.Services.AddScoped<VehiculosServices>();
+builder.Services.AddScoped<SegurosServices>();
 
 var app = builder.Build();
 

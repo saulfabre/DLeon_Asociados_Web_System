@@ -177,6 +177,11 @@ namespace DLeon_Asociados_Web.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
+                    b.Property<bool>("Existe")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
                     b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");
 

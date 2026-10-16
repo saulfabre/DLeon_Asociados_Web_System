@@ -12,7 +12,7 @@ public class VehiculosServices(IDbContextFactory<Contexto> contextFactory)
 
         return await contexto.Vehiculos
             .AsNoTracking()
-            .FirstOrDefaultAsync(v => v.Id == id);
+            .FirstOrDefaultAsync(v => v.Id == id && v.Existe);
     }
 
     public async Task<List<Vehiculos>> GetList(
@@ -29,6 +29,7 @@ public class VehiculosServices(IDbContextFactory<Contexto> contextFactory)
 
         var query = contexto.Vehiculos
             .AsNoTracking()
+            .Where(v => v.Existe)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(marca))
@@ -145,7 +146,7 @@ public class VehiculosServices(IDbContextFactory<Contexto> contextFactory)
         await using var contexto = await contextFactory.CreateDbContextAsync();
 
         var existente = await contexto.Vehiculos
-            .FirstOrDefaultAsync(v => v.Id == vehiculo.Id);
+            .FirstOrDefaultAsync(v => v.Id == vehiculo.Id && v.Existe);
 
         if (existente is null)
         {
@@ -188,14 +189,14 @@ public class VehiculosServices(IDbContextFactory<Contexto> contextFactory)
         await using var contexto = await contextFactory.CreateDbContextAsync();
 
         var vehiculo = await contexto.Vehiculos
-            .FirstOrDefaultAsync(v => v.Id == id);
+            .FirstOrDefaultAsync(v => v.Id == id && v.Existe);
 
         if (vehiculo is null)
         {
             return false;
         }
 
-        contexto.Vehiculos.Remove(vehiculo);
+        vehiculo.Existe = false;
         await contexto.SaveChangesAsync();
         return true;
     }
@@ -216,6 +217,7 @@ public class VehiculosServices(IDbContextFactory<Contexto> contextFactory)
         await using var contexto = await contextFactory.CreateDbContextAsync();
 
         var query = contexto.Vehiculos.AsNoTracking().Where(v =>
+            v.Existe &&
             v.Marca == marca &&
             v.Modelo == modelo &&
             v.Anio == anio &&

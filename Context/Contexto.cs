@@ -25,6 +25,7 @@ public class Contexto : DbContext
 			entity.Property(v => v.Modelo).HasMaxLength(80).IsRequired();
 			entity.Property(v => v.Tipo).HasMaxLength(80).IsRequired();
 			entity.Property(v => v.Nombre).HasMaxLength(200).IsRequired();
+			entity.Property(v => v.Existe).HasDefaultValue(true);
 			entity.Property(v => v.Precio).HasColumnType("decimal(18,2)");
 			entity.HasIndex(v => new { v.Marca, v.Modelo });
 			entity.HasIndex(v => v.Estado);

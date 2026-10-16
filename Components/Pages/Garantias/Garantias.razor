@@ -1,277 +1,130 @@
-﻿@page "/Garantias"
+@page "/Garantias"
+@using Microsoft.AspNetCore.Components.QuickGrid
 @rendermode InteractiveServer
 @inject IJSRuntime JS
 
 <AdminLayout ActivePage="warranties">
-<div class="pagina-garantias">
-
-    <!-- BARRA SUPERIOR -->
-    <header class="header-garantias">
-
-        <h1>Reporte de garantías próximas a expirar</h1>
-
-        <div class="header-derecha">
-            <button class="btn-notificacion" type="button" aria-label="Notificaciones">
-                <i class="cil-bell" aria-hidden="true"></i>
-            </button>
-
-        </div>
-
-    </header>
-
-
-    <!-- CONTENIDO -->
-    <main class="contenido-garantias">
-
-        <!-- FILTROS -->
-        <div class="barra-filtros">
-
-            <input class="buscar-garantia"
-                   type="text"
-                   placeholder="Buscar vehículo o placa..." />
-
-
-            <select class="filtro">
-
-                <option>Estado</option>
-                <option>Todos</option>
-                <option>Vigente</option>
-                <option>Expira pronto</option>
-                <option>Vencida</option>
-
-            </select>
-
-
-            <select class="filtro">
-
-                <option>Sep 2026</option>
-                <option>Oct 2026</option>
-                <option>Nov 2026</option>
-                <option>Dic 2026</option>
-
-            </select>
-
-
-            <button class="btn-limpiar">
-                Limpiar Filtro
-            </button>
-
-
-            <button class="btn-generar" type="button" @onclick="ImprimirReporte">
-                <i class="cil-print" aria-hidden="true"></i> Generar/Imprimir
-            </button>
-
-        </div>
-
-
-        <!-- TABLA -->
-        <table class="tabla-garantias">
-
-            <thead>
-
-                <tr>
-
-                    <th>Vehículo</th>
-
-                    <th>Placa</th>
-
-                    <th>Garantía</th>
-
-                    <th>Fecha de inicio</th>
-
-                    <th>Fecha de expiración</th>
-
-                    <th>Días restantes</th>
-
-                    <th>Estado</th>
-
-                </tr>
-
-            </thead>
-
-
-            <tbody>
-
-                <tr>
-
-                    <td class="vehiculo">
-                        Toyota Corolla 2023
-                    </td>
-
-                    <td>
-                        L-8A-901
-                    </td>
-
-                    <td>
-                        Garantía de<br />
-                        fábrica
-                    </td>
-
-                    <td class="fecha-gris">
-                        20/09/2025
-                    </td>
-
-                    <td>
-                        20/09/2026
-                    </td>
-
-                    <td class="dias">
-                        2
-                    </td>
-
-                    <td class="estado-expira">
-                        <i class="cil-clock" aria-hidden="true"></i> Expira pronto
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td class="vehiculo">
-                        Honda Civic 2021
-                    </td>
-
-                    <td>
-                        G-2C-118
-                    </td>
-
-                    <td>
-                        Garantía<br />
-                        extendida
-                    </td>
-
-                    <td class="fecha-gris">
-                        23/09/2025
-                    </td>
-
-                    <td>
-                        23/09/2026
-                    </td>
-
-                    <td class="dias">
-                        5
-                    </td>
-
-                    <td class="estado-expira">
-                        <i class="cil-clock" aria-hidden="true"></i> Expira pronto
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td class="vehiculo">
-                        Hyundai Tucson 2022
-                    </td>
-
-                    <td>
-                        M-9F-442
-                    </td>
-
-                    <td>
-                        Garantía de motor
-                    </td>
-
-                    <td class="fecha-gris">
-                        25/09/2025
-                    </td>
-
-                    <td>
-                        25/09/2026
-                    </td>
-
-                    <td class="dias">
-                        7
-                    </td>
-
-                    <td class="estado-expira">
-                        <i class="cil-clock" aria-hidden="true"></i> Expira pronto
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td class="vehiculo">
-                        Kia Sportage 2020
-                    </td>
-
-                    <td>
-                        K-1B-776
-                    </td>
-
-                    <td>
-                        Garantía de<br />
-                        transmisión
-                    </td>
-
-                    <td class="fecha-gris">
-                        27/09/2025
-                    </td>
-
-                    <td>
-                        27/09/2026
-                    </td>
-
-                    <td class="dias">
-                        9
-                    </td>
-
-                    <td class="estado-expira">
-                        <i class="cil-clock" aria-hidden="true"></i> Expira pronto
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td class="vehiculo">
-                        Nissan Sentra 2019
-                    </td>
-
-                    <td>
-                        N-4D-203
-                    </td>
-
-                    <td>
-                        Garantía de<br />
-                        batería
-                    </td>
-
-                    <td class="fecha-gris">
-                        30/09/2025
-                    </td>
-
-                    <td>
-                        30/09/2026
-                    </td>
-
-                    <td class="dias">
-                        12
-                    </td>
-
-                    <td class="estado-expira">
-                        <i class="cil-clock" aria-hidden="true"></i> Expira pronto
-                    </td>
-
-                </tr>
-
-            </tbody>
-
-        </table>
-
-    </main>
-
-</div>
+    <div class="pagina-garantias">
+        <header class="header-garantias">
+            <h1>Reporte de garantías próximas a expirar</h1>
+        </header>
+
+        <main class="contenido-garantias">
+            <div class="contenido-card">
+            <div class="barra-filtros">
+                <label class="busqueda-garantias">
+                    <i class="cil-search" aria-hidden="true"></i>
+                    <input type="search" placeholder="Buscar vehículo o placa..."
+                           @bind="TextoBusqueda" @bind:event="oninput" @bind:after="ReiniciarPaginacion" />
+                </label>
+
+                <select class="form-select filtro-estado" aria-label="Filtrar por estado"
+                        @bind="EstadoFiltro" @bind:after="ReiniciarPaginacion">
+                    <option value="">Todos los estados</option>
+                    <option value="Vigente">Vigente</option>
+                    <option value="Expira pronto">Expira pronto</option>
+                    <option value="Vencida">Vencida</option>
+                </select>
+
+                <select class="form-select filtro-mes" aria-label="Filtrar por mes de expiración"
+                        @bind="MesFiltro" @bind:after="ReiniciarPaginacion">
+                    <option value="">Todos los meses</option>
+                    <option value="2026-09">Sep 2026</option>
+                    <option value="2026-10">Oct 2026</option>
+                    <option value="2026-11">Nov 2026</option>
+                    <option value="2026-12">Dic 2026</option>
+                </select>
+
+                <div class="acciones-filtros">
+                    <button class="btn btn-outline-secondary" type="button" @onclick="LimpiarFiltros">
+                        Limpiar filtros
+                    </button>
+                    <button class="btn btn-primary btn-imprimir" type="button" @onclick="ImprimirReporte">
+                        <i class="cil-print" aria-hidden="true"></i> Generar reporte
+                    </button>
+                </div>
+            </div>
+
+            @if (GarantiasFiltradas.Count == 0)
+            {
+                <div class="estado-vacio">
+                    @(RegistrosGarantia.Count == 0
+                        ? "No hay garantías registradas."
+                        : "No hay garantías que coincidan con los filtros.")
+                </div>
+            }
+            else
+            {
+                <div class="tabla-responsive">
+                    <QuickGrid @key="ClaveFiltros" TGridItem="GarantiaReporte"
+                               Items="@GarantiasFiltradas.AsQueryable()" Pagination="@Paginacion"
+                               Class="table table-bordered table-hover align-middle tabla-garantias">
+                        <PropertyColumn Property="garantia => garantia.Vehiculo" Title="Vehículo" Sortable="true" />
+                        <PropertyColumn Property="garantia => garantia.Placa" Title="Placa" Sortable="true" />
+                        <PropertyColumn Property="garantia => garantia.Tipo" Title="Garantía" Sortable="true" />
+                        <PropertyColumn Property="garantia => garantia.FechaInicio" Title="Fecha de inicio"
+                                        Format="dd/MM/yyyy" Sortable="true" />
+                        <PropertyColumn Property="garantia => garantia.FechaExpiracion" Title="Fecha de expiración"
+                                        Format="dd/MM/yyyy" Sortable="true" />
+                        <PropertyColumn Property="garantia => garantia.DiasRestantes" Title="Días restantes" Sortable="true" />
+                        <PropertyColumn Property="garantia => garantia.Estado" Title="Estado" Sortable="true" />
+                    </QuickGrid>
+                    <Paginator State="@Paginacion" />
+                </div>
+            }
+            </div>
+        </main>
+    </div>
 </AdminLayout>
 
 @code {
-    private async Task ImprimirReporte()
+    private readonly PaginationState Paginacion = new() { ItemsPerPage = 10 };
+    private readonly List<GarantiaReporte> RegistrosGarantia = new()
     {
-        await JS.InvokeVoidAsync("window.print");
+        new("Toyota Corolla 2023", "L-8A-901", "Garantía de fábrica",
+            new DateTime(2025, 9, 20), new DateTime(2026, 9, 20), 2, "Expira pronto"),
+        new("Honda Civic 2021", "G-2C-118", "Garantía extendida",
+            new DateTime(2025, 9, 23), new DateTime(2026, 9, 23), 5, "Expira pronto"),
+        new("Hyundai Tucson 2022", "M-9F-442", "Garantía de motor",
+            new DateTime(2025, 9, 25), new DateTime(2026, 9, 25), 7, "Expira pronto"),
+        new("Kia Sportage 2020", "K-1B-776", "Garantía de transmisión",
+            new DateTime(2025, 9, 27), new DateTime(2026, 9, 27), 9, "Expira pronto"),
+        new("Nissan Sentra 2019", "N-4D-203", "Garantía de batería",
+            new DateTime(2025, 9, 30), new DateTime(2026, 9, 30), 12, "Expira pronto")
+    };
+    private string TextoBusqueda = string.Empty;
+    private string EstadoFiltro = string.Empty;
+    private string MesFiltro = string.Empty;
+
+    private List<GarantiaReporte> GarantiasFiltradas => RegistrosGarantia
+        .Where(garantia => string.IsNullOrWhiteSpace(TextoBusqueda) ||
+            garantia.Vehiculo.Contains(TextoBusqueda.Trim(), StringComparison.OrdinalIgnoreCase) ||
+            garantia.Placa.Contains(TextoBusqueda.Trim(), StringComparison.OrdinalIgnoreCase))
+        .Where(garantia => string.IsNullOrWhiteSpace(EstadoFiltro) || garantia.Estado == EstadoFiltro)
+        .Where(garantia => string.IsNullOrWhiteSpace(MesFiltro) ||
+            garantia.FechaExpiracion.ToString("yyyy-MM") == MesFiltro)
+        .ToList();
+
+    private string ClaveFiltros => $"{TextoBusqueda}|{EstadoFiltro}|{MesFiltro}";
+
+    private async Task LimpiarFiltros()
+    {
+        TextoBusqueda = string.Empty;
+        EstadoFiltro = string.Empty;
+        MesFiltro = string.Empty;
+        await ReiniciarPaginacion();
     }
+
+    private Task ReiniciarPaginacion() => Paginacion.SetCurrentPageIndexAsync(0);
+
+    private Task ImprimirReporte() => JS.InvokeVoidAsync("window.print").AsTask();
+
+    private sealed record GarantiaReporte(
+        string Vehiculo,
+        string Placa,
+        string Tipo,
+        DateTime FechaInicio,
+        DateTime FechaExpiracion,
+        int DiasRestantes,
+        string Estado);
 }

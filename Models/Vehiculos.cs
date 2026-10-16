@@ -26,6 +26,8 @@ public class Vehiculos
     [Required]
     public int Anio { get; set; }
 
+    public bool Existe { get; set; } = true;
+
     [Required]
     [Range(0, 100000000)]
     public decimal Precio { get; set; }

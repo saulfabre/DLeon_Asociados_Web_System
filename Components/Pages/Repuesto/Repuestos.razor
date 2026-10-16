@@ -1,251 +1,113 @@
-﻿@page "/Repuestos"
+@page "/Repuestos"
+@using Microsoft.AspNetCore.Components.QuickGrid
 @rendermode InteractiveServer
+@inject IJSRuntime JS
 
 <AdminLayout ActivePage="parts">
-<div class="pagina-repuestos">
+    <div class="pagina-repuestos">
+        <header class="header-repuestos">
+            <h1>Catálogo de Repuestos</h1>
+        </header>
 
-    <!-- BARRA SUPERIOR -->
-    <header class="header-repuestos">
+        <main class="contenido-repuestos">
+            <div class="contenido-card">
+            <div class="barra-herramientas">
+                <label class="busqueda-repuestos">
+                    <i class="cil-search" aria-hidden="true"></i>
+                    <input type="search" placeholder="Buscar repuesto por nombre o código..."
+                           @bind="TextoBusqueda" @bind:event="oninput" @bind:after="ReiniciarPaginacion" />
+                </label>
 
-        <h1>Catálogo de Repuestos</h1>
-
-        <div class="header-derecha">
-            <button class="btn-notificacion" type="button" aria-label="Notificaciones">
-                <i class="cil-bell" aria-hidden="true"></i>
-            </button>
-
-        </div>
-
-    </header>
-
-
-    <!-- CONTENIDO -->
-    <main class="contenido-repuestos">
-
-        <!-- BUSQUEDA Y BOTONES -->
-        <div class="barra-herramientas">
-
-            <input class="buscar-repuesto"
-                   type="text"
-                   placeholder="Buscar repuesto por nombre o código..." />
-
-            <div class="acciones">
-
-                <a class="btn-importar" href="/Repuestos/Importar">
-                    <i class="cil-cloud-download" aria-hidden="true"></i> Importar CSV
-                </a>
-
-                <a class="btn-agregar" href="/Repuestos/Crear">
-                    <i class="cil-plus" aria-hidden="true"></i> Agregar Repuesto
-                </a>
-
+                <div class="acciones">
+                    <button class="btn btn-outline-secondary" type="button" @onclick="LimpiarFiltros">
+                        Limpiar filtros
+                    </button>
+                    <button class="btn btn-primary btn-generar" type="button" @onclick="ImprimirReporte">
+                        <i class="cil-print" aria-hidden="true"></i> Generar reporte
+                    </button>
+                    <a class="btn btn-outline-secondary btn-importar" href="/Repuestos/Importar">
+                        <i class="cil-cloud-download" aria-hidden="true"></i> Importar CSV
+                    </a>
+                    <a class="btn btn-primary btn-agregar" href="/Repuestos/Crear">
+                        <i class="cil-plus" aria-hidden="true"></i> Agregar Repuesto
+                    </a>
+                </div>
             </div>
 
-        </div>
-
-
-        <!-- TABLA -->
-        <table class="tabla-repuestos">
-
-            <thead>
-
-                <tr>
-
-                    <th>Nombre Pieza</th>
-
-                    <th>Marca</th>
-
-                    <th>Tipo</th>
-
-                    <th>Tamaño</th>
-
-                    <th>Disponibles</th>
-
-                    <th>Precio Unitario</th>
-
-                    <th>Proveedor</th>
-
-                </tr>
-
-            </thead>
-
-
-            <tbody>
-
-                <tr>
-
-                    <td class="nombre-pieza">
-                        Filtro de Aceite
-                    </td>
-
-                    <td>
-                        Bosch
-                    </td>
-
-                    <td>
-                        Filtro
-                    </td>
-
-                    <td class="texto-gris">
-                        Estándar
-                    </td>
-
-                    <td class="cantidad baja">
-                        4
-                    </td>
-
-                    <td class="precio">
-                        $12.50
-                    </td>
-
-                    <td class="texto-gris">
-                        Bosch Chile
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td class="nombre-pieza">
-                        Pastillas de Freno
-                    </td>
-
-                    <td>
-                        Brembo
-                    </td>
-
-                    <td>
-                        Frenos
-                    </td>
-
-                    <td class="texto-gris">
-                        Delantero
-                    </td>
-
-                    <td class="cantidad">
-                        24
-                    </td>
-
-                    <td class="precio">
-                        $45.00
-                    </td>
-
-                    <td class="texto-gris">
-                        Repuestos Global
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td class="nombre-pieza">
-                        Amortiguador Hidráulico
-                    </td>
-
-                    <td>
-                        Monroe
-                    </td>
-
-                    <td>
-                        Suspensión
-                    </td>
-
-                    <td class="texto-gris">
-                        Universal
-                    </td>
-
-                    <td class="cantidad baja">
-                        2
-                    </td>
-
-                    <td class="precio">
-                        $78.90
-                    </td>
-
-                    <td class="texto-gris">
-                        Distribuidora Sur
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td class="nombre-pieza">
-                        Batería 12V 75Ah
-                    </td>
-
-                    <td>
-                        Varta
-                    </td>
-
-                    <td>
-                        Eléctrico
-                    </td>
-
-                    <td class="texto-gris">
-                        L3
-                    </td>
-
-                    <td class="cantidad">
-                        15
-                    </td>
-
-                    <td class="precio">
-                        $110.00
-                    </td>
-
-                    <td class="texto-gris">
-                        Varta Import
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td class="nombre-pieza">
-                        Bujía de Iridio
-                    </td>
-
-                    <td>
-                        NGK
-                    </td>
-
-                    <td>
-                        Motor
-                    </td>
-
-                    <td class="texto-gris">
-                        Universal
-                    </td>
-
-                    <td class="cantidad">
-                        80
-                    </td>
-
-                    <td class="precio">
-                        $6.50
-                    </td>
-
-                    <td class="texto-gris">
-                        Repuestos Global
-                    </td>
-
-                </tr>
-
-            </tbody>
-
-        </table>
-
-    </main>
-
-</div>
+            @if (RepuestosFiltrados.Count == 0)
+            {
+                <div class="estado-vacio">
+                    @(RegistrosRepuestos.Count == 0
+                        ? "No hay repuestos registrados."
+                        : "No hay repuestos que coincidan con la búsqueda.")
+                </div>
+            }
+            else
+            {
+                <div class="tabla-responsive">
+                    <QuickGrid @key="TextoBusqueda" TGridItem="RepuestoRegistro"
+                               Items="@RepuestosFiltrados.AsQueryable()" Pagination="@Paginacion"
+                               Class="table table-bordered table-hover align-middle tabla-repuestos">
+                        <PropertyColumn Property="repuesto => repuesto.Nombre" Title="Nombre Pieza" Sortable="true" />
+                        <PropertyColumn Property="repuesto => repuesto.Marca" Title="Marca" Sortable="true" />
+                        <PropertyColumn Property="repuesto => repuesto.Tipo" Title="Tipo" Sortable="true" />
+                        <PropertyColumn Property="repuesto => repuesto.Tamano" Title="Tamaño" />
+                        <PropertyColumn Property="repuesto => repuesto.Disponibles" Title="Disponibles" Sortable="true" />
+                        <TemplateColumn Title="Precio Unitario" Sortable="true" SortBy="OrdenPrecio" Context="repuesto">
+                            <span class="precio">
+                                $@repuesto.PrecioUnitario.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))
+                            </span>
+                        </TemplateColumn>
+                        <PropertyColumn Property="repuesto => repuesto.Proveedor" Title="Proveedor" Sortable="true" />
+                    </QuickGrid>
+                    <Paginator State="@Paginacion" />
+                </div>
+            }
+            </div>
+        </main>
+    </div>
 </AdminLayout>
 
+@code {
+    private readonly PaginationState Paginacion = new() { ItemsPerPage = 10 };
+    private readonly List<RepuestoRegistro> RegistrosRepuestos = new()
+    {
+        new("Filtro de Aceite", "Bosch", "Filtro", "Estándar", 4, 12.50m, "Bosch Chile"),
+        new("Pastillas de Freno", "Brembo", "Frenos", "Delantero", 24, 45.00m, "Repuestos Global"),
+        new("Amortiguador Hidráulico", "Monroe", "Suspensión", "Universal", 2, 78.90m, "Distribuidora Sur"),
+        new("Batería 12V 75Ah", "Varta", "Eléctrico", "L3", 15, 110.00m, "Varta Import"),
+        new("Bujía de Iridio", "NGK", "Motor", "Universal", 80, 6.50m, "Repuestos Global")
+    };
+    private string TextoBusqueda = string.Empty;
 
-@code{
+    private static GridSort<RepuestoRegistro> OrdenPrecio { get; } =
+        GridSort<RepuestoRegistro>.ByAscending(repuesto => repuesto.PrecioUnitario);
 
+    private List<RepuestoRegistro> RepuestosFiltrados => RegistrosRepuestos
+        .Where(repuesto => string.IsNullOrWhiteSpace(TextoBusqueda) ||
+            repuesto.Nombre.Contains(TextoBusqueda.Trim(), StringComparison.OrdinalIgnoreCase) ||
+            repuesto.Marca.Contains(TextoBusqueda.Trim(), StringComparison.OrdinalIgnoreCase) ||
+            repuesto.Tipo.Contains(TextoBusqueda.Trim(), StringComparison.OrdinalIgnoreCase) ||
+            repuesto.Tamano.Contains(TextoBusqueda.Trim(), StringComparison.OrdinalIgnoreCase) ||
+            repuesto.Proveedor.Contains(TextoBusqueda.Trim(), StringComparison.OrdinalIgnoreCase))
+        .ToList();
+
+    private async Task LimpiarFiltros()
+    {
+        TextoBusqueda = string.Empty;
+        await ReiniciarPaginacion();
+    }
+
+    private Task ReiniciarPaginacion() => Paginacion.SetCurrentPageIndexAsync(0);
+
+    private Task ImprimirReporte() => JS.InvokeVoidAsync("window.print").AsTask();
+
+    private sealed record RepuestoRegistro(
+        string Nombre,
+        string Marca,
+        string Tipo,
+        string Tamano,
+        int Disponibles,
+        decimal PrecioUnitario,
+        string Proveedor);
 }

@@ -158,9 +158,21 @@ body *:not(i):not([class^="cil-"]):not([class*=" cil-"]) {
     line-height: 1.5;
 }
 
+.admin-layout .pagina-proveedores .tabla-proveedores,
+.admin-layout .pagina-repuestos .tabla-repuestos {
+    font-family: 'Poppins', sans-serif !important;
+    font-size: 0.9rem !important;
+    line-height: 1.5;
+}
+
 .admin-layout .pagina-seguros .tabla-seguros th,
-.admin-layout .pagina-seguros .tabla-seguros td {
+.admin-layout .pagina-seguros .tabla-seguros td,
+.admin-layout .pagina-proveedores .tabla-proveedores th,
+.admin-layout .pagina-proveedores .tabla-proveedores td,
+.admin-layout .pagina-repuestos .tabla-repuestos th,
+.admin-layout .pagina-repuestos .tabla-repuestos td {
     padding: 16px 16px !important;
+    font-size: 0.9rem !important;
 }
 
 .admin-layout .pagina-seguros .tabla-seguros th {
@@ -179,38 +191,16 @@ body *:not(i):not([class^="cil-"]):not([class*=" cil-"]) {
     }
 }
 
-.admin-layout .tabla-seguros tbody tr:has(> td):not(:has(> td:not(:empty))) {
+.admin-layout .tabla-seguros tbody tr:has(> td):not(:has(> td:not(:empty))),
+.admin-layout .tabla-garantias tbody tr:has(> td):not(:has(> td:not(:empty))),
+.admin-layout .tabla-proveedores tbody tr:has(> td):not(:has(> td:not(:empty))),
+.admin-layout .tabla-repuestos tbody tr:has(> td):not(:has(> td:not(:empty))),
+.admin-layout .tabla-clientes tbody tr:has(> td):not(:has(> td:not(:empty))) {
     display: none;
 }
 
 .admin-layout .estado {
     font-size: 0.75rem;
-}
-
-.admin-layout .btn-notificacion,
-.admin-layout .notificacion {
-    display: inline-grid;
-    flex: 0 0 40px;
-    place-items: center;
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    border: 1px solid #e3e8ef;
-    border-radius: 50%;
-    background: #f0f4f8;
-    color: #334155;
-    cursor: pointer;
-}
-
-.admin-layout .notificacion {
-    margin-left: 12px;
-}
-
-.admin-layout .btn-notificacion i,
-.admin-layout .notificacion i {
-    display: block;
-    font-size: 16px;
-    line-height: 1;
 }
 
 .admin-sidebar .sidebar-footer .dropdown {

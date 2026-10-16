@@ -1,186 +1,143 @@
-﻿@page "/Proveedores"
+@page "/Proveedores"
+@using Microsoft.AspNetCore.Components.QuickGrid
 @rendermode InteractiveServer
+@inject IJSRuntime JS
 
 <AdminLayout ActivePage="suppliers">
-<div class="pagina-proveedores">
+    <div class="pagina-proveedores">
+        <header class="header-proveedores">
+            <h1>Proveedores</h1>
+        </header>
 
-    <!-- ENCABEZADO -->
-    <header class="header-proveedores">
+        <main class="contenido-proveedores">
+            <div class="contenido-card">
+            <div class="filtros">
+                <label class="busqueda-proveedores">
+                    <i class="cil-search" aria-hidden="true"></i>
+                    <input type="search" placeholder="Buscar proveedor por nombre o código..."
+                           @bind="TextoBusqueda" @bind:event="oninput" @bind:after="ReiniciarPaginacion" />
+                </label>
 
-        <h1>Proveedores</h1>
+                <select class="form-select filtro-estado" aria-label="Filtrar por estado"
+                        @bind="EstadoFiltro" @bind:after="ReiniciarPaginacion">
+                    <option value="">Todos los estados</option>
+                    <option value="Activo">Activo</option>
+                    <option value="Inactivo">Inactivo</option>
+                </select>
 
-        <div class="header-derecha">
-            <button class="btn-notificacion" type="button" aria-label="Notificaciones">
-                <i class="cil-bell" aria-hidden="true"></i>
-            </button>
+                <select class="form-select filtro-ciudad" aria-label="Filtrar por ciudad"
+                        @bind="CiudadFiltro" @bind:after="ReiniciarPaginacion">
+                    <option value="">Todas las ciudades</option>
+                    @foreach (var ciudad in Proveedores.Select(proveedor => proveedor.Ciudad).Distinct().OrderBy(ciudad => ciudad))
+                    {
+                        <option value="@ciudad">@ciudad</option>
+                    }
+                </select>
 
-        </div>
+                <div class="acciones-filtros">
+                    <button class="btn btn-outline-secondary" type="button" @onclick="LimpiarFiltros">
+                        Limpiar filtros
+                    </button>
+                    <button class="btn btn-primary btn-imprimir" type="button" @onclick="ImprimirReporte">
+                        <i class="cil-print" aria-hidden="true"></i> Generar reporte
+                    </button>
+                    <a class="btn btn-primary btn-agregar" href="/Proveedores/Crear">
+                        <i class="cil-plus" aria-hidden="true"></i> Agregar Proveedor
+                    </a>
+                </div>
+            </div>
 
-    </header>
-
-
-    <!-- CONTENIDO -->
-    <main class="contenido-proveedores">
-
-        <!-- FILTROS -->
-        <div class="filtros">
-
-            <input type="text"
-                   class="buscar-proveedor"
-                   placeholder="Buscar proveedor por nombre o código..." />
-
-            <select>
-                <option>Estado</option>
-                <option>Activo</option>
-                <option>Inactivo</option>
-            </select>
-
-            <select>
-                <option>Ciudad</option>
-                <option>Santo Domingo</option>
-                <option>Puerto Plata</option>
-                <option>Santiago</option>
-                <option>La Romana</option>
-            </select>
-
-            <button class="btn-limpiar">
-                Limpiar Filtro
-            </button>
-
-            <a class="btn-agregar" href="/Proveedores/Crear">
-                <i class="cil-plus" aria-hidden="true"></i> Agregar Proveedor
-            </a>
-
-        </div>
-
-
-        <!-- TABLA -->
-        <table class="tabla-proveedores">
-
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Cédula/RNC</th>
-                    <th>Teléfono</th>
-                    <th>Correo</th>
-                    <th>Ciudad</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-                <tr>
-                    <td>Repuestos Saul RS</td>
-                    <td>056-548741-4</td>
-                    <td>809-876-6412</td>
-                    <td>Saul12@gmail.com</td>
-                    <td>Santo Domingo</td>
-
-                    <td>
-                        <span class="estado activo">
-                            Activo
-                        </span>
-                    </td>
-
-                    <td>
-                        <a class="btn-editar" href="/Proveedores/Editar?proveedor=Repuestos%20Saul%20RS" aria-label="Editar proveedor"><i class="cil-pencil" aria-hidden="true"></i></a>
-                        <button class="btn-eliminar" type="button" aria-label="Eliminar proveedor"><i class="cil-trash" aria-hidden="true"></i></button>
-                    </td>
-                </tr>
-
-
-                <tr>
-                    <td>Distribuidor Euwin.BR</td>
-                    <td>045-458741-1</td>
-                    <td>809-721-9539</td>
-                    <td>Euwin@gmail.com</td>
-                    <td>Puerto Plata</td>
-
-                    <td>
-                        <span class="estado inactivo">
-                            Inactivo
-                        </span>
-                    </td>
-
-                    <td>
-                        <a class="btn-editar" href="/Proveedores/Editar?proveedor=Distribuidor%20Euwin.BR" aria-label="Editar proveedor"><i class="cil-pencil" aria-hidden="true"></i></a>
-                        <button class="btn-eliminar" type="button" aria-label="Eliminar proveedor"><i class="cil-trash" aria-hidden="true"></i></button>
-                    </td>
-                </tr>
-
-
-                <tr>
-                    <td>Repuesto Esthaly.ER</td>
-                    <td>408-87475-8</td>
-                    <td>829-987-8745</td>
-                    <td>Esthaly@gmail.com</td>
-                    <td>Tenares</td>
-
-                    <td>
-                        <span class="estado activo">
-                            Activo
-                        </span>
-                    </td>
-
-                    <td>
-                        <a class="btn-editar" href="/Proveedores/Editar?proveedor=Repuesto%20Esthaly.ER" aria-label="Editar proveedor"><i class="cil-pencil" aria-hidden="true"></i></a>
-                        <button class="btn-eliminar" type="button" aria-label="Eliminar proveedor"><i class="cil-trash" aria-hidden="true"></i></button>
-                    </td>
-                </tr>
-
-
-                <tr>
-                    <td>Repuesto Lola.rd</td>
-                    <td>098-871857-3</td>
-                    <td>849-245-8745</td>
-                    <td>Lola@gmail.com</td>
-                    <td>Jarabacoa</td>
-
-                    <td>
-                        <span class="estado inactivo">
-                            Inactivo
-                        </span>
-                    </td>
-
-                    <td>
-                        <a class="btn-editar" href="/Proveedores/Editar?proveedor=Repuesto%20Lola.rd" aria-label="Editar proveedor"><i class="cil-pencil" aria-hidden="true"></i></a>
-                        <button class="btn-eliminar" type="button" aria-label="Eliminar proveedor"><i class="cil-trash" aria-hidden="true"></i></button>
-                    </td>
-                </tr>
-
-
-                <tr>
-                    <td>Importadora Juan.GD</td>
-                    <td>056-878451-8</td>
-                    <td>809-874-5698</td>
-                    <td>Juan@gmail.com</td>
-                    <td>San Francisco de Macorís</td>
-
-                    <td>
-                        <span class="estado activo">
-                            Activo
-                        </span>
-                    </td>
-
-                    <td>
-                        <a class="btn-editar" href="/Proveedores/Editar?proveedor=Importadora%20Juan.GD" aria-label="Editar proveedor"><i class="cil-pencil" aria-hidden="true"></i></a>
-                        <button class="btn-eliminar" type="button" aria-label="Eliminar proveedor"><i class="cil-trash" aria-hidden="true"></i></button>
-                    </td>
-                </tr>
-
-            </tbody>
-
-        </table>
-
-    </main>
-
-</div>
+            @if (ProveedoresFiltrados.Count == 0)
+            {
+                <div class="estado-vacio">
+                    @(Proveedores.Count == 0
+                        ? "No hay proveedores registrados."
+                        : "No hay proveedores que coincidan con los filtros.")
+                </div>
+            }
+            else
+            {
+                <div class="tabla-responsive">
+                    <QuickGrid @key="ClaveFiltros" TGridItem="ProveedorRegistro"
+                               Items="@ProveedoresFiltrados.AsQueryable()" Pagination="@Paginacion"
+                               Class="table table-bordered table-hover align-middle tabla-proveedores">
+                        <PropertyColumn Property="proveedor => proveedor.Nombre" Title="Proveedor" Sortable="true" />
+                        <PropertyColumn Property="proveedor => proveedor.Documento" Title="Cédula/RNC" Sortable="true" />
+                        <PropertyColumn Property="proveedor => proveedor.Telefono" Title="Teléfono" />
+                        <PropertyColumn Property="proveedor => proveedor.Correo" Title="Correo" />
+                        <PropertyColumn Property="proveedor => proveedor.Ciudad" Title="Ciudad" Sortable="true" />
+                        <TemplateColumn Title="Estado" Sortable="true" SortBy="OrdenEstado" Context="proveedor">
+                            @proveedor.Estado
+                        </TemplateColumn>
+                        <TemplateColumn Title="Acciones" Context="proveedor">
+                            <div class="acciones-registro">
+                                <a class="btn btn-sm btn-outline-primary"
+                                   href="@($"/Proveedores/Editar?proveedor={Uri.EscapeDataString(proveedor.Nombre)}")"
+                                   aria-label="@($"Editar {proveedor.Nombre}")">
+                                    <i class="cil-pencil" aria-hidden="true"></i>
+                                </a>
+                                <button class="btn btn-sm btn-outline-danger" type="button"
+                                        aria-label="@($"Eliminar {proveedor.Nombre}")">
+                                    <i class="cil-trash" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </TemplateColumn>
+                    </QuickGrid>
+                    <Paginator State="@Paginacion" />
+                </div>
+            }
+            </div>
+        </main>
+    </div>
 </AdminLayout>
 
-
-
 @code {
+    private readonly PaginationState Paginacion = new() { ItemsPerPage = 10 };
+    private readonly List<ProveedorRegistro> Proveedores = new()
+    {
+        new("Repuestos Saul RS", "056-548741-4", "809-876-6412", "Saul12@gmail.com", "Santo Domingo", "Activo"),
+        new("Distribuidor Euwin.BR", "045-458741-1", "809-721-9539", "Euwin@gmail.com", "Puerto Plata", "Inactivo"),
+        new("Repuesto Esthaly.ER", "408-87475-8", "829-987-8745", "Esthaly@gmail.com", "Tenares", "Activo"),
+        new("Repuesto Lola.rd", "098-871857-3", "849-245-8745", "Lola@gmail.com", "Jarabacoa", "Inactivo"),
+        new("Importadora Juan.GD", "056-878451-8", "809-874-5698", "Juan@gmail.com", "San Francisco de Macorís", "Activo")
+    };
+    private string TextoBusqueda = string.Empty;
+    private string EstadoFiltro = string.Empty;
+    private string CiudadFiltro = string.Empty;
 
+    private static GridSort<ProveedorRegistro> OrdenEstado { get; } =
+        GridSort<ProveedorRegistro>.ByAscending(proveedor => proveedor.Estado);
+
+    private List<ProveedorRegistro> ProveedoresFiltrados => Proveedores
+        .Where(proveedor => string.IsNullOrWhiteSpace(TextoBusqueda) ||
+            proveedor.Nombre.Contains(TextoBusqueda.Trim(), StringComparison.OrdinalIgnoreCase) ||
+            proveedor.Documento.Contains(TextoBusqueda.Trim(), StringComparison.OrdinalIgnoreCase) ||
+            proveedor.Telefono.Contains(TextoBusqueda.Trim(), StringComparison.OrdinalIgnoreCase) ||
+            proveedor.Correo.Contains(TextoBusqueda.Trim(), StringComparison.OrdinalIgnoreCase) ||
+            proveedor.Ciudad.Contains(TextoBusqueda.Trim(), StringComparison.OrdinalIgnoreCase))
+        .Where(proveedor => string.IsNullOrWhiteSpace(EstadoFiltro) || proveedor.Estado == EstadoFiltro)
+        .Where(proveedor => string.IsNullOrWhiteSpace(CiudadFiltro) || proveedor.Ciudad == CiudadFiltro)
+        .ToList();
+
+    private string ClaveFiltros => $"{TextoBusqueda}|{EstadoFiltro}|{CiudadFiltro}";
+
+    private async Task LimpiarFiltros()
+    {
+        TextoBusqueda = string.Empty;
+        EstadoFiltro = string.Empty;
+        CiudadFiltro = string.Empty;
+        await ReiniciarPaginacion();
+    }
+
+    private Task ReiniciarPaginacion() => Paginacion.SetCurrentPageIndexAsync(0);
+
+    private Task ImprimirReporte() => JS.InvokeVoidAsync("window.print").AsTask();
+
+    private sealed record ProveedorRegistro(
+        string Nombre,
+        string Documento,
+        string Telefono,
+        string Correo,
+        string Ciudad,
+        string Estado);
 }

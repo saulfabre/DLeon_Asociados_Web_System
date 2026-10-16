@@ -92,12 +92,19 @@
     private Clientes? ClienteSeleccionado;
 
     private List<Clientes> ClientesFiltrados => Clientes
+        .Where(TieneDatosVisibles)
         .Where(cliente => string.IsNullOrWhiteSpace(TextoBusqueda) ||
             cliente.NombreCompleto.Contains(TextoBusqueda.Trim(), StringComparison.OrdinalIgnoreCase) ||
             (cliente.Documento?.Contains(TextoBusqueda.Trim(), StringComparison.OrdinalIgnoreCase) ?? false) ||
             (cliente.Telefono?.Contains(TextoBusqueda.Trim(), StringComparison.OrdinalIgnoreCase) ?? false) ||
             (cliente.Correo?.Contains(TextoBusqueda.Trim(), StringComparison.OrdinalIgnoreCase) ?? false))
         .ToList();
+
+    private static bool TieneDatosVisibles(Clientes cliente) =>
+        !string.IsNullOrWhiteSpace(cliente.NombreCompleto) ||
+        !string.IsNullOrWhiteSpace(cliente.Documento) ||
+        !string.IsNullOrWhiteSpace(cliente.Telefono) ||
+        !string.IsNullOrWhiteSpace(cliente.Correo);
 
     protected override async Task OnInitializedAsync()
     {

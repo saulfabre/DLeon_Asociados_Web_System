@@ -25,13 +25,6 @@
                 Agregar Vehículo
             </div>
 
-            <div class="barra-derecha">
-                <button class="notificacion" type="button" aria-label="Notificaciones">
-                    <i class="cil-bell" aria-hidden="true"></i>
-                </button>
-
-            </div>
-
         </header>
 
 
@@ -551,6 +544,7 @@
         {
             Marca = Marca,
             Modelo = Modelo,
+            Edicion = string.IsNullOrWhiteSpace(Edicion) ? null : Edicion.Trim(),
             Anio = Anio.Value,
             Precio = Precio.Value,
             Estado = Estado,

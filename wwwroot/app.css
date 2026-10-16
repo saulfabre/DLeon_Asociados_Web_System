@@ -152,6 +152,37 @@ body *:not(i):not([class^="cil-"]):not([class*=" cil-"]) {
     font-size: 0.85rem;
 }
 
+.admin-layout .pagina-seguros .tabla-seguros {
+    font-family: 'Poppins', sans-serif !important;
+    font-size: 0.9rem !important;
+    line-height: 1.5;
+}
+
+.admin-layout .pagina-seguros .tabla-seguros th,
+.admin-layout .pagina-seguros .tabla-seguros td {
+    padding: 16px 16px !important;
+}
+
+.admin-layout .pagina-seguros .tabla-seguros th {
+    font-weight: 600;
+}
+
+.admin-layout .pagina-seguros .acciones-registro {
+    display: flex;
+    gap: 8px;
+}
+
+@media print {
+    .admin-layout .pagina-seguros .tabla-seguros th:last-child,
+    .admin-layout .pagina-seguros .tabla-seguros td:last-child {
+        display: none !important;
+    }
+}
+
+.admin-layout .tabla-seguros tbody tr:has(> td):not(:has(> td:not(:empty))) {
+    display: none;
+}
+
 .admin-layout .estado {
     font-size: 0.75rem;
 }

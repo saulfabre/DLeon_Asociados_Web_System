@@ -86,6 +86,28 @@
     font-family: inherit;
 }
 
+.editar-vehiculo-image {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    min-width: 0;
+}
+
+.editar-vehiculo-image > label {
+    color: #374151;
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+.editar-vehiculo-image-preview {
+    width: 100%;
+    max-height: 180px;
+    object-fit: contain;
+    border: 1px solid #dce1e8;
+    border-radius: 6px;
+    background: #fff;
+}
+
 .editar-vehiculo-form input:focus,
 .editar-vehiculo-form select:focus,
 .editar-vehiculo-form textarea:focus {

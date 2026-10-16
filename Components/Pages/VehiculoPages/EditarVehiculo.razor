@@ -1,9 +1,12 @@
 @page "/vehiculo/editar"
 @using DLeon_Asociados_Web.Components.Layout
+@using DLeon_Asociados_Web.Services
+@using Microsoft.AspNetCore.Components.Forms
 @rendermode InteractiveServer
 @inject DLeon_Asociados_Web.Services.VehiculosServices VehiculosServices
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
+@inject IWebHostEnvironment HostEnvironment
 
 <PageTitle>Editar Vehículo | D'Leon Asociados</PageTitle>
 
@@ -94,12 +97,24 @@
                     Descripción del vehículo
                     <textarea @bind="Descripcion" rows="5"></textarea>
                 </label>
-                <label>
-                    URL de imagen
-                    <input type="text"
-                           @bind="Imagen"
-                           placeholder="https://... o /images/vehiculos/imagen.jpg" />
-                </label>
+                <div class="editar-vehiculo-image">
+                    <label for="imagen-vehiculo">Foto del vehículo</label>
+                    <InputFile id="imagen-vehiculo" class="form-control"
+                               accept="image/jpeg,image/png,image/webp"
+                               OnChange="SeleccionarImagen" />
+                    @if (!string.IsNullOrWhiteSpace(ErrorImagen))
+                    {
+                        <span class="text-danger" role="alert">@ErrorImagen</span>
+                    }
+                    else if (ImagenArchivo is not null)
+                    {
+                        <span class="text-success">@ImagenArchivo.Name</span>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Imagen))
+                    {
+                        <img class="editar-vehiculo-image-preview" src="@Imagen" alt="Foto actual del vehículo" />
+                    }
+                </div>
             </div>
 
             <div class="editar-vehiculo-actions">
@@ -129,6 +144,8 @@
     private int? Kilometraje { get; set; }
     private string Descripcion { get; set; } = string.Empty;
     private string Imagen { get; set; } = string.Empty;
+    private IBrowserFile? ImagenArchivo { get; set; }
+    private string? ErrorImagen { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -160,6 +177,21 @@
         Imagen = VehiculoActual.Imagen ?? string.Empty;
     }
 
+    private void SeleccionarImagen(InputFileChangeEventArgs args)
+    {
+        try
+        {
+            VehiculoImagenes.ValidarArchivo(args.File);
+            ImagenArchivo = args.File;
+            ErrorImagen = null;
+        }
+        catch (InvalidOperationException exception)
+        {
+            ImagenArchivo = null;
+            ErrorImagen = exception.Message;
+        }
+    }
+
     private async Task GuardarCambios()
     {
         if (VehiculoActual is null ||
@@ -179,6 +211,21 @@
             return;
         }
 
+        string? nuevaImagen = null;
+        if (ImagenArchivo is not null)
+        {
+            try
+            {
+                nuevaImagen = await VehiculoImagenes.GuardarAsync(ImagenArchivo, HostEnvironment.WebRootPath);
+            }
+            catch (Exception exception)
+            {
+                await JS.InvokeVoidAsync("alert", exception.Message);
+                return;
+            }
+        }
+
+        var imagenAnterior = VehiculoActual.Imagen;
         VehiculoActual.Marca = Marca.Trim();
         VehiculoActual.Modelo = Modelo.Trim();
         VehiculoActual.Edicion = string.IsNullOrWhiteSpace(Edicion) ? null : Edicion.Trim();
@@ -191,13 +238,14 @@
         VehiculoActual.Transmision = string.IsNullOrWhiteSpace(Transmision) ? null : Transmision;
         VehiculoActual.Kilometraje = Kilometraje;
         VehiculoActual.Descripcion = string.IsNullOrWhiteSpace(Descripcion) ? null : Descripcion.Trim();
-        VehiculoActual.Imagen = string.IsNullOrWhiteSpace(Imagen) ? null : Imagen.Trim();
+        VehiculoActual.Imagen = nuevaImagen ?? (string.IsNullOrWhiteSpace(Imagen) ? null : Imagen.Trim());
 
         try
         {
             var actualizado = await VehiculosServices.Modificar(VehiculoActual);
             if (!actualizado)
             {
+                VehiculoImagenes.EliminarSubida(nuevaImagen, HostEnvironment.WebRootPath);
                 await JS.InvokeVoidAsync("alert", "El vehículo ya no existe en el inventario.");
                 Navigation.NavigateTo("/vehiculos");
                 return;
@@ -205,8 +253,14 @@
         }
         catch (InvalidOperationException ex)
         {
+            VehiculoImagenes.EliminarSubida(nuevaImagen, HostEnvironment.WebRootPath);
             await JS.InvokeVoidAsync("alert", ex.Message);
             return;
+        }
+
+        if (nuevaImagen is not null)
+        {
+            VehiculoImagenes.EliminarSubida(imagenAnterior, HostEnvironment.WebRootPath);
         }
 
         Navigation.NavigateTo("/vehiculos");

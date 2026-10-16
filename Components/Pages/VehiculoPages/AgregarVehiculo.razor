@@ -1,7 +1,10 @@
 @page "/vehiculo/agregar"
 @using DLeon_Asociados_Web.Components.Layout
+@using DLeon_Asociados_Web.Services
+@using Microsoft.AspNetCore.Components.Forms
 @rendermode InteractiveServer
 @inject DLeon_Asociados_Web.Services.VehiculosServices VehiculosServices
+@inject IWebHostEnvironment HostEnvironment
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
 
@@ -415,25 +418,28 @@
                                 <i class="cil-image" aria-hidden="true"></i>
                             </div>
 
-                            <h4>URL de imagen</h4>
+                            <h4>Seleccionar foto del vehículo</h4>
 
                             <p>
-                                Pega la URL de la imagen del vehículo
+                                JPG, PNG o WebP. Tamaño máximo: 5 MB.
                             </p>
 
                             <div class="campo campo-completo">
-                                <label for="imagen-url">URL de imagen</label>
-                                <input type="text"
-                                       id="imagen-url"
-                                       @bind="ImagenUrl"
-                                       placeholder="https://... o /images/vehiculos/imagen.jpg" />
+                                <label for="imagen-archivo">Foto del vehículo</label>
+                                <InputFile id="imagen-archivo" class="form-control"
+                                           accept="image/jpeg,image/png,image/webp"
+                                           OnChange="SeleccionarImagen" />
                             </div>
 
-                            @if (!string.IsNullOrWhiteSpace(ImagenUrl))
+                            @if (ImagenArchivo is not null)
                             {
                                 <div class="imagen-seleccionada">
-                                    <i class="cil-check-circle" aria-hidden="true"></i> @ImagenUrl
+                                    <i class="cil-check-circle" aria-hidden="true"></i> @ImagenArchivo.Name
                                 </div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(ErrorImagen))
+                            {
+                                <div class="alert alert-danger mt-2" role="alert">@ErrorImagen</div>
                             }
 
                         </div>
@@ -492,7 +498,23 @@
 
     private string Descripcion = "";
 
-    private string ImagenUrl = string.Empty;
+    private IBrowserFile? ImagenArchivo;
+    private string? ErrorImagen;
+
+    private void SeleccionarImagen(InputFileChangeEventArgs args)
+    {
+        try
+        {
+            VehiculoImagenes.ValidarArchivo(args.File);
+            ImagenArchivo = args.File;
+            ErrorImagen = null;
+        }
+        catch (InvalidOperationException exception)
+        {
+            ImagenArchivo = null;
+            ErrorImagen = exception.Message;
+        }
+    }
 
 
     private async Task GuardarVehiculo()
@@ -511,6 +533,20 @@
             return;
         }
 
+        string? imagenGuardada = null;
+        try
+        {
+            if (ImagenArchivo is not null)
+            {
+                imagenGuardada = await VehiculoImagenes.GuardarAsync(ImagenArchivo, HostEnvironment.WebRootPath);
+            }
+        }
+        catch (Exception exception)
+        {
+            await JS.InvokeVoidAsync("alert", exception.Message);
+            return;
+        }
+
         var vehiculo = new DLeon_Asociados_Web.Models.Vehiculos
         {
             Marca = Marca,
@@ -524,7 +560,7 @@
             Transmision = Transmision,
             Kilometraje = Kilometraje,
             Descripcion = Descripcion,
-            Imagen = string.IsNullOrWhiteSpace(ImagenUrl) ? null : ImagenUrl.Trim(),
+            Imagen = imagenGuardada,
             Nombre = $"{Marca} {Modelo} {(!string.IsNullOrWhiteSpace(Edicion) ? Edicion : string.Empty)}".Trim(),
             FechaPublicacion = DateTime.UtcNow,
             FechaCreacion = DateTime.UtcNow
@@ -536,7 +572,14 @@
         }
         catch (InvalidOperationException ex)
         {
+            VehiculoImagenes.EliminarSubida(imagenGuardada, HostEnvironment.WebRootPath);
             await JS.InvokeVoidAsync("alert", ex.Message);
+            return;
+        }
+        catch (Exception ex)
+        {
+            VehiculoImagenes.EliminarSubida(imagenGuardada, HostEnvironment.WebRootPath);
+            await JS.InvokeVoidAsync("alert", $"No fue posible guardar el vehículo: {ex.Message}");
             return;
         }
 

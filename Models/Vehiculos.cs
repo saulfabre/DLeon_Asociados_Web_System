@@ -57,6 +57,8 @@ public class Vehiculos
 
     public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
 
+    public ICollection<Seguros> Seguros { get; set; } = new List<Seguros>();
+
     [NotMapped]
     public string Millaje => Kilometraje.HasValue ? $"{Kilometraje.Value:N0} Km" : "Sin registro";
 

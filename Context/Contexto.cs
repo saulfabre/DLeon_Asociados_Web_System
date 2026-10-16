@@ -12,6 +12,7 @@ public class Contexto : DbContext
 
 	public DbSet<Vehiculos> Vehiculos { get; set; }
 	public DbSet<Seguros> Seguros { get; set; }
+	public DbSet<Clientes> Clientes { get; set; }
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
@@ -29,6 +30,18 @@ public class Contexto : DbContext
 			entity.HasIndex(v => v.Estado);
 		});
 
+		modelBuilder.Entity<Clientes>(entity =>
+		{
+			entity.HasKey(c => c.Id);
+			entity.Property(c => c.Id).HasColumnName("IdCliente");
+			entity.Property(c => c.NombreCompleto).HasColumnName("NombreCompleto").HasMaxLength(160).IsUnicode(false).IsRequired();
+			entity.Property(c => c.Documento).HasMaxLength(40).IsUnicode(false).IsRequired(false);
+			entity.Property(c => c.Telefono).HasMaxLength(30).IsUnicode(false).IsRequired(false);
+			entity.Property(c => c.Correo).HasMaxLength(150).IsUnicode(false).IsRequired(false);
+			entity.Property(c => c.Direccion).HasMaxLength(250).IsUnicode(false).IsRequired(false);
+			entity.HasIndex(c => c.Documento).IsUnique().HasFilter("[Documento] IS NOT NULL");
+		});
+
 		modelBuilder.Entity<Seguros>(entity =>
 		{
 			entity.HasKey(s => s.Id);
@@ -42,11 +55,16 @@ public class Contexto : DbContext
 			entity.Property(s => s.FechaInicio).HasColumnType("date");
 			entity.Property(s => s.FechaExpiracion).HasColumnType("date");
 			entity.HasIndex(s => s.VehiculoId);
+			entity.HasIndex(s => s.ClienteId);
 			entity.HasIndex(s => s.FechaExpiracion);
 			entity.HasOne(s => s.Vehiculo)
 				.WithMany(v => v.Seguros)
 				.HasForeignKey(s => s.VehiculoId)
 				.OnDelete(DeleteBehavior.Restrict);
+			entity.HasOne(s => s.Cliente)
+				.WithMany(c => c.Seguros)
+				.HasForeignKey(s => s.ClienteId)
+				.OnDelete(DeleteBehavior.SetNull);
 		});
 	}
 }

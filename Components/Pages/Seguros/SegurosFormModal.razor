@@ -1,7 +1,9 @@
 @using DLeon_Asociados_Web.Models
 @using DLeon_Asociados_Web.Services
+@using DLeon_Asociados_Web.Components.Pages.Registro
 @using SeguroModel = DLeon_Asociados_Web.Models.Seguros
 @inject SegurosServices SegurosServices
+@inject ClientesServices ClientesServices
 
 @if (Visible)
 {
@@ -25,6 +27,22 @@
                         {
                             <div class="alert alert-danger" role="alert">@Error</div>
                         }
+                        <div class="d-flex align-items-end gap-2 mb-3">
+                            <div class="flex-grow-1">
+                                <label class="form-label" for="seguro-cliente-existente">Cliente registrado</label>
+                                <select id="seguro-cliente-existente" class="form-select"
+                                        value="@ClienteIdSeleccionado" @onchange="CambiarClienteSeleccionado">
+                                    <option value="">Registrar datos nuevos</option>
+                                    @foreach (var cliente in Clientes)
+                                    {
+                                        <option value="@cliente.Id">@cliente.NombreCompleto · @cliente.Documento</option>
+                                    }
+                                </select>
+                            </div>
+                            <button class="btn btn-outline-primary text-nowrap" type="button" @onclick="AbrirNuevoCliente">
+                                <i class="cil-plus" aria-hidden="true"></i> Nuevo cliente
+                            </button>
+                        </div>
                         <h3 class="h6 mb-3">Información del cliente</h3>
                         <div class="row g-3 mb-3">
                             <div class="col-sm-6">
@@ -107,6 +125,11 @@
     </div>
 }
 
+    <ClientesFormModal Visible="MostrarModalClienteNuevo"
+                       VisibleChanged="CambiarVisibilidadModalCliente"
+                       Cliente="ClienteParaCrear"
+                       OnClienteSaved="ClienteNuevoGuardado" />
+
 @code {
     [Parameter] public bool Visible { get; set; }
     [Parameter] public EventCallback<bool> VisibleChanged { get; set; }
@@ -114,21 +137,27 @@
     [Parameter] public List<Vehiculos> Vehiculos { get; set; } = new();
     [Parameter] public EventCallback OnSaved { get; set; }
 
+    private List<Clientes> Clientes { get; set; } = new();
     private SeguroModel Modelo { get; set; } = NuevoModelo();
+    private Clientes? ClienteParaCrear { get; set; }
+    private int? ClienteIdSeleccionado { get; set; }
     private string? Error { get; set; }
     private bool Guardando { get; set; }
     private bool VisibleAnterior { get; set; }
+    private bool MostrarModalClienteNuevo { get; set; }
     private int? IdCargado { get; set; }
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
         if (Visible && (!VisibleAnterior || IdCargado != Seguro?.Id))
         {
+            Clientes = await ClientesServices.ObtenerTodos();
             Modelo = Seguro is null
                 ? NuevoModelo()
                 : new SeguroModel
                 {
                     Id = Seguro.Id,
+                    ClienteId = Seguro.ClienteId,
                     VehiculoId = Seguro.VehiculoId,
                     Tipo = Seguro.Tipo,
                     FechaInicio = Seguro.FechaInicio,
@@ -140,6 +169,7 @@
                     ClienteCorreo = Seguro.ClienteCorreo,
                     ClienteDireccion = Seguro.ClienteDireccion
                 };
+            ClienteIdSeleccionado = Modelo.ClienteId;
             Error = null;
             IdCargado = Seguro?.Id;
         }
@@ -179,6 +209,56 @@
         {
             Guardando = false;
         }
+    }
+
+    private void AbrirNuevoCliente()
+    {
+        ClienteParaCrear = new Clientes();
+        MostrarModalClienteNuevo = true;
+    }
+
+    private Task CambiarVisibilidadModalCliente(bool visible)
+    {
+        MostrarModalClienteNuevo = visible;
+        return Task.CompletedTask;
+    }
+
+    private async Task ClienteNuevoGuardado(Clientes clienteGuardado)
+    {
+        Clientes = await ClientesServices.ObtenerTodos();
+        ClienteIdSeleccionado = clienteGuardado.Id;
+        AplicarClienteSeleccionado();
+    }
+
+    private void AplicarClienteSeleccionado()
+    {
+        Modelo.ClienteId = ClienteIdSeleccionado;
+        var cliente = Clientes.FirstOrDefault(item => item.Id == ClienteIdSeleccionado);
+        if (cliente is null)
+        {
+            Modelo.ClienteNombre = string.Empty;
+            Modelo.ClienteApellido = string.Empty;
+            Modelo.ClienteDocumento = string.Empty;
+            Modelo.ClienteTelefono = string.Empty;
+            Modelo.ClienteCorreo = string.Empty;
+            Modelo.ClienteDireccion = string.Empty;
+            return;
+        }
+
+        Modelo.ClienteNombre = cliente.Nombre;
+        Modelo.ClienteApellido = cliente.Apellido;
+        Modelo.ClienteDocumento = cliente.Documento ?? string.Empty;
+        Modelo.ClienteTelefono = cliente.Telefono ?? string.Empty;
+        Modelo.ClienteCorreo = cliente.Correo ?? string.Empty;
+        Modelo.ClienteDireccion = cliente.Direccion ?? string.Empty;
+    }
+
+    private void CambiarClienteSeleccionado(ChangeEventArgs args)
+    {
+        ClienteIdSeleccionado = int.TryParse(args.Value?.ToString(), out var clienteId)
+            ? clienteId
+            : null;
+        AplicarClienteSeleccionado();
     }
 
     private async Task Cancelar()

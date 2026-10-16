@@ -22,6 +22,51 @@ namespace DLeon_Asociados_Web.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("DLeon_Asociados_Web.Models.Clientes", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("IdCliente");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Correo")
+                        .HasMaxLength(150)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(150)");
+
+                    b.Property<string>("Direccion")
+                        .HasMaxLength(250)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(250)");
+
+                    b.Property<string>("Documento")
+                        .HasMaxLength(40)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(40)");
+
+                    b.Property<string>("NombreCompleto")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(160)")
+                        .HasColumnName("NombreCompleto");
+
+                    b.Property<string>("Telefono")
+                        .HasMaxLength(30)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Documento")
+                        .IsUnique()
+                        .HasFilter("[Documento] IS NOT NULL");
+
+                    b.ToTable("Clientes");
+                });
+
             modelBuilder.Entity("DLeon_Asociados_Web.Models.Seguros", b =>
                 {
                     b.Property<int>("Id")
@@ -58,6 +103,9 @@ namespace DLeon_Asociados_Web.Migrations
                         .HasColumnType("nvarchar(40)")
                         .HasDefaultValue("");
 
+                    b.Property<int?>("ClienteId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ClienteNombre")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -87,6 +135,8 @@ namespace DLeon_Asociados_Web.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClienteId");
 
                     b.HasIndex("FechaExpiracion");
 
@@ -178,13 +228,25 @@ namespace DLeon_Asociados_Web.Migrations
 
             modelBuilder.Entity("DLeon_Asociados_Web.Models.Seguros", b =>
                 {
+                    b.HasOne("DLeon_Asociados_Web.Models.Clientes", "Cliente")
+                        .WithMany("Seguros")
+                        .HasForeignKey("ClienteId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("DLeon_Asociados_Web.Models.Vehiculos", "Vehiculo")
                         .WithMany("Seguros")
                         .HasForeignKey("VehiculoId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.Navigation("Cliente");
+
                     b.Navigation("Vehiculo");
+                });
+
+            modelBuilder.Entity("DLeon_Asociados_Web.Models.Clientes", b =>
+                {
+                    b.Navigation("Seguros");
                 });
 
             modelBuilder.Entity("DLeon_Asociados_Web.Models.Vehiculos", b =>

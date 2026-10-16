@@ -14,6 +14,10 @@ public class Seguros
 
     public Vehiculos? Vehiculo { get; set; }
 
+    public int? ClienteId { get; set; }
+
+    public Clientes? Cliente { get; set; }
+
     [Required]
     [StringLength(80)]
     public string ClienteNombre { get; set; } = string.Empty;

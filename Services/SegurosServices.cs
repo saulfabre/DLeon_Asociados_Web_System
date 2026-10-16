@@ -60,7 +60,13 @@ public class SegurosServices(IDbContextFactory<Contexto> contextFactory)
             throw new InvalidOperationException("El vehículo seleccionado ya no existe.");
         }
 
+        if (seguro.ClienteId.HasValue && !await contexto.Clientes.AnyAsync(cliente => cliente.Id == seguro.ClienteId.Value))
+        {
+            throw new InvalidOperationException("El cliente seleccionado ya no existe.");
+        }
+
         seguro.Vehiculo = null;
+        seguro.Cliente = null;
         contexto.Seguros.Add(seguro);
         await contexto.SaveChangesAsync();
         return seguro;
@@ -83,7 +89,13 @@ public class SegurosServices(IDbContextFactory<Contexto> contextFactory)
             throw new InvalidOperationException("El vehículo seleccionado ya no existe.");
         }
 
+        if (seguro.ClienteId.HasValue && !await contexto.Clientes.AnyAsync(cliente => cliente.Id == seguro.ClienteId.Value))
+        {
+            throw new InvalidOperationException("El cliente seleccionado ya no existe.");
+        }
+
         existente.VehiculoId = seguro.VehiculoId;
+        existente.ClienteId = seguro.ClienteId;
         existente.Tipo = seguro.Tipo.Trim();
         existente.FechaInicio = seguro.FechaInicio.Date;
         existente.FechaExpiracion = seguro.FechaExpiracion.Date;

@@ -19,7 +19,7 @@
                         <button type="button" class="btn-close" aria-label="Cerrar" disabled="@Guardando" @onclick="Cancelar"></button>
                     </div>
                     <div class="modal-body">
-                        @if (Vehiculos.Count == 0)
+                        @if (Vehiculos.Count == 0 && Modelo.VehiculoId == 0)
                         {
                             <div class="alert alert-warning" role="alert">Registra un vehículo antes de agregar un seguro.</div>
                         }
@@ -33,6 +33,13 @@
                                 <select id="seguro-cliente-existente" class="form-select"
                                         value="@ClienteIdSeleccionado" @onchange="CambiarClienteSeleccionado">
                                     <option value="">Registrar datos nuevos</option>
+                                    @if (ClienteIdSeleccionado.HasValue &&
+                                         Clientes.All(cliente => cliente.Id != ClienteIdSeleccionado.Value))
+                                    {
+                                        <option value="@ClienteIdSeleccionado">
+                                            @Modelo.ClienteNombre @Modelo.ClienteApellido · Inactivo
+                                        </option>
+                                    }
                                     @foreach (var cliente in Clientes)
                                     {
                                         <option value="@cliente.Id">@cliente.NombreCompleto · @cliente.Documento</option>
@@ -80,16 +87,46 @@
                             <label class="form-label" for="seguro-vehiculo">Vehículo</label>
                             <InputSelect id="seguro-vehiculo" class="form-select" @bind-Value="Modelo.VehiculoId">
                                 <option value="0">Seleccionar vehículo</option>
+                                @if (Modelo.VehiculoId > 0 && Vehiculos.All(vehiculo => vehiculo.Id != Modelo.VehiculoId))
+                                {
+                                    <option value="@Modelo.VehiculoId">
+                                        @Seguro?.Vehiculo?.NombreCompleto · Matrícula: @Seguro?.Vehiculo?.Matricula (inactivo)
+                                    </option>
+                                }
                                 @foreach (var vehiculo in Vehiculos)
                                 {
-                                    <option value="@vehiculo.Id">@vehiculo.NombreCompleto (@vehiculo.Anio)</option>
+                                    <option value="@vehiculo.Id">@vehiculo.NombreCompleto (@vehiculo.Anio) · Matrícula: @vehiculo.Matricula</option>
                                 }
                             </InputSelect>
                             <ValidationMessage For="() => Modelo.VehiculoId" />
                         </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-sm-6">
+                                <label class="form-label" for="seguro-numero">Número de seguro</label>
+                                <InputText id="seguro-numero" class="form-control" @bind-Value="Modelo.NumeroSeguro" maxlength="50" />
+                                <ValidationMessage For="() => Modelo.NumeroSeguro" />
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label" for="seguro-proveedor-tipo">Proveedor de seguro</label>
+                                <InputSelect id="seguro-proveedor-tipo" class="form-select" @bind-Value="Modelo.TipoProveedor">
+                                    <option value="Propio">Propio</option>
+                                    <option value="Externo">Externo</option>
+                                </InputSelect>
+                                <ValidationMessage For="() => Modelo.TipoProveedor" />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" for="seguro-proveedor-nombre">Nombre del proveedor</label>
+                                <InputText id="seguro-proveedor-nombre" class="form-control" @bind-Value="Modelo.ProveedorNombre" maxlength="120" />
+                                <ValidationMessage For="() => Modelo.ProveedorNombre" />
+                            </div>
+                        </div>
                         <div class="mb-3">
                             <label class="form-label" for="seguro-tipo">Tipo de seguro</label>
-                            <InputText id="seguro-tipo" class="form-control" @bind-Value="Modelo.Tipo" maxlength="80" />
+                            <InputSelect id="seguro-tipo" class="form-select" @bind-Value="Modelo.Tipo">
+                                <option value="Estandar">Estandar</option>
+                                <option value="Semi-Full">Semi-Full</option>
+                                <option value="Full">Full</option>
+                            </InputSelect>
                             <ValidationMessage For="() => Modelo.Tipo" />
                         </div>
                         <div class="row g-3">
@@ -107,7 +144,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" disabled="@Guardando" @onclick="Cancelar">Cancelar</button>
-                        <button type="submit" class="btn btn-primary" disabled="@(Guardando || Vehiculos.Count == 0)">
+                        <button type="submit" class="btn btn-primary"
+                                disabled="@(Guardando || (Vehiculos.Count == 0 && Modelo.VehiculoId == 0))">
                             @if (Guardando)
                             {
                                 <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
@@ -157,9 +195,13 @@
                 : new SeguroModel
                 {
                     Id = Seguro.Id,
+                    Existe = Seguro.Existe,
                     ClienteId = Seguro.ClienteId,
                     VehiculoId = Seguro.VehiculoId,
                     Tipo = Seguro.Tipo,
+                    NumeroSeguro = Seguro.NumeroSeguro,
+                    TipoProveedor = Seguro.TipoProveedor,
+                    ProveedorNombre = Seguro.ProveedorNombre,
                     FechaInicio = Seguro.FechaInicio,
                     FechaExpiracion = Seguro.FechaExpiracion,
                     ClienteNombre = Seguro.ClienteNombre,
@@ -271,7 +313,8 @@
 
     private static SeguroModel NuevoModelo() => new()
     {
-        Tipo = "Seguro Vehicular",
+        Tipo = "Estandar",
+        TipoProveedor = "Propio",
         FechaInicio = DateTime.Today,
         FechaExpiracion = DateTime.Today.AddYears(1)
     };

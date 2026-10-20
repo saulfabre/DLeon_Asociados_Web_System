@@ -15,7 +15,7 @@
 
     @* Contenido de edición *@
     <main class="editar-vehiculo-content">
-        <header class="editar-vehiculo-header">
+        <header class="editar-vehiculo-header admin-page-header">
             <h1>Editar Vehículo</h1>
             <a class="editar-vehiculo-back" href="/vehiculos">Volver al inventario</a>
         </header>
@@ -31,6 +31,10 @@
                 <label>
                     Modelo
                     <input type="text" @bind="Modelo" />
+                </label>
+                <label>
+                    Matrícula
+                    <input type="text" maxlength="20" @bind="Matricula" />
                 </label>
                 <label>
                     Edición
@@ -133,6 +137,7 @@
     private DLeon_Asociados_Web.Models.Vehiculos? VehiculoActual;
     private string Marca { get; set; } = string.Empty;
     private string Modelo { get; set; } = string.Empty;
+    private string Matricula { get; set; } = string.Empty;
     private string Edicion { get; set; } = string.Empty;
     private int? Anio { get; set; }
     private decimal? Precio { get; set; }
@@ -164,6 +169,7 @@
 
         Marca = VehiculoActual.Marca;
         Modelo = VehiculoActual.Modelo;
+        Matricula = VehiculoActual.Matricula;
         Edicion = VehiculoActual.Edicion ?? string.Empty;
         Anio = VehiculoActual.Anio;
         Precio = VehiculoActual.Precio;
@@ -197,6 +203,7 @@
         if (VehiculoActual is null ||
             string.IsNullOrWhiteSpace(Marca) ||
             string.IsNullOrWhiteSpace(Modelo) ||
+            string.IsNullOrWhiteSpace(Matricula) ||
             string.IsNullOrWhiteSpace(Estado) ||
             string.IsNullOrWhiteSpace(Tipo) ||
             !Anio.HasValue ||
@@ -228,6 +235,7 @@
         var imagenAnterior = VehiculoActual.Imagen;
         VehiculoActual.Marca = Marca.Trim();
         VehiculoActual.Modelo = Modelo.Trim();
+        VehiculoActual.Matricula = Matricula.Trim();
         VehiculoActual.Edicion = string.IsNullOrWhiteSpace(Edicion) ? null : Edicion.Trim();
         VehiculoActual.Anio = Anio.Value;
         VehiculoActual.Precio = Precio.Value;

@@ -82,6 +82,12 @@
                 </div>
 
                 <div class="filter-field">
+                    <label for="vehicle-registration">Matrícula</label>
+                    <input id="vehicle-registration" class="filter-input" type="search"
+                           placeholder="Buscar matrícula" @bind="MatriculaBusqueda" />
+                </div>
+
+                <div class="filter-field">
                     <label for="vehicle-edition">Edición</label>
                     <select id="vehicle-edition" class="filter-select" @bind="EdicionSeleccionada">
                         <option value="">Todas</option>
@@ -239,6 +245,7 @@
     private string MarcaSeleccionada { get; set; } = string.Empty;
     private string ModeloSeleccionado { get; set; } = string.Empty;
     private string EdicionSeleccionada { get; set; } = string.Empty;
+    private string MatriculaBusqueda { get; set; } = string.Empty;
     private int? AnioDesde { get; set; }
     private int? AnioHasta { get; set; }
     private decimal? PrecioMinimo { get; set; }
@@ -268,6 +275,15 @@
                 .Where(vehiculo => string.Equals(vehiculo.Edicion, EdicionSeleccionada, StringComparison.OrdinalIgnoreCase))
                 .ToList();
         }
+
+        if (!string.IsNullOrWhiteSpace(MatriculaBusqueda))
+        {
+            VehiculosFiltrados = VehiculosFiltrados
+                .Where(vehiculo => vehiculo.Matricula.Contains(
+                    MatriculaBusqueda.Trim(),
+                    StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
     }
 
     private async Task LimpiarFiltros()
@@ -276,6 +292,7 @@
         MarcaSeleccionada = string.Empty;
         ModeloSeleccionado = string.Empty;
         EdicionSeleccionada = string.Empty;
+        MatriculaBusqueda = string.Empty;
         AnioDesde = null;
         AnioHasta = null;
         PrecioMinimo = null;

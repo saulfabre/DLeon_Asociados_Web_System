@@ -15,7 +15,7 @@
     <main class="contenido">
 
         <!-- BARRA SUPERIOR -->
-        <header class="barra-superior">
+        <header class="barra-superior admin-page-header">
             <div class="titulo">
                 Inventario de Vehículos
             </div>
@@ -30,12 +30,12 @@
                     <i class="cil-search" aria-hidden="true"></i>
                     <input class="busqueda"
                            type="search"
-                           placeholder="Buscar vehículo, marca o modelo..."
+                           placeholder="Buscar vehículo, matrícula, marca o modelo..."
                            value="@TextoBusqueda"
                            @oninput="CambiarBusqueda" />
                 </label>
 
-                <a class="btn-agregar" href="/vehiculo/agregar">
+                <a class="btn btn-primary" href="/vehiculo/agregar">
                     <i class="cil-plus" aria-hidden="true"></i> Agregar Vehículo
                 </a>
 
@@ -120,6 +120,9 @@
                                     @vehiculo.Estado
                                 </span>
                                 <span class="combustible">
+                                    Matrícula: @vehiculo.Matricula
+                                </span>
+                                <span class="combustible">
                                     @vehiculo.Combustible
                                 </span>
                                 <div class="botones">
@@ -200,7 +203,8 @@
             query = query.Where(v =>
                 v.NombreCompleto.Contains(TextoBusqueda, StringComparison.OrdinalIgnoreCase) ||
                 v.Marca.Contains(TextoBusqueda, StringComparison.OrdinalIgnoreCase) ||
-                v.Modelo.Contains(TextoBusqueda, StringComparison.OrdinalIgnoreCase));
+                v.Modelo.Contains(TextoBusqueda, StringComparison.OrdinalIgnoreCase) ||
+                v.Matricula.Contains(TextoBusqueda, StringComparison.OrdinalIgnoreCase));
         }
 
         if (!string.IsNullOrWhiteSpace(MarcaFiltro))

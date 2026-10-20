@@ -1,6 +1,6 @@
 .pagina-clientes {
     min-height: 100vh;
-    padding: 28px;
+    padding: 0;
     background: #f6f8fb;
     color: #172033;
 }
@@ -12,42 +12,21 @@
 }
 
 .header-clientes {
+    min-height: 64px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 20px;
-    margin-bottom: 22px;
-}
-
-.header-clientes h1 {
+    gap: 16px;
+    max-width: none;
     margin: 0;
-    font-size: 26px;
-    font-weight: 700;
-}
-
-.header-clientes p {
-    margin: 5px 0 0;
-    color: #718096;
-}
-
-.btn-nuevo-cliente {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    min-height: 42px;
-    padding: 0 16px;
-    border: 1px solid #2864e8;
-    border-radius: 6px;
-    background: #2864e8;
-    color: white;
-    font-weight: 600;
-}
-
-.btn-nuevo-cliente:hover {
-    background: #1e50c4;
+    padding: 12px 24px;
+    border-bottom: 1px solid #e3e8ef;
+    background: #fff;
 }
 
 .contenido-clientes {
+    max-width: none;
+    margin: 24px;
     padding: 24px;
     border: 1px solid #dfe6ee;
     border-radius: 8px;
@@ -138,12 +117,12 @@
 
 @media (max-width: 640px) {
     .pagina-clientes {
-        padding: 18px 14px;
+        padding: 0;
     }
 
     .header-clientes {
-        align-items: flex-start;
-        flex-direction: column;
+        align-items: center;
+        padding: 12px 16px;
     }
 
     .contenido-clientes {

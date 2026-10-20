@@ -28,20 +28,20 @@
    ========================================= */
 
 .barra-superior {
-    height: 60px;
+    height: 64px;
     width: 100%;
     background: white;
     border-bottom: 1px solid #e2e6ec;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 25px;
+    padding: 0 24px;
     box-sizing: border-box;
 }
 
 .titulo {
-    font-size: 17px;
-    font-weight: bold;
+    font-size: 1.1rem;
+    font-weight: 600;
     color: #172033;
 }
 

@@ -19,7 +19,7 @@
     <main class="contenido">
 
         <!-- Barra superior -->
-        <header class="barra-superior">
+        <header class="barra-superior admin-page-header">
 
             <div class="titulo">
                 Agregar Vehículo
@@ -139,6 +139,18 @@
                                        @bind="Modelo"
                                        placeholder="Ej. Hilux" />
 
+                            </div>
+
+                            <div class="campo">
+                                <label for="matricula">
+                                    Matrícula
+                                    <span>*</span>
+                                </label>
+                                <input id="matricula"
+                                       type="text"
+                                       @bind="Matricula"
+                                       maxlength="20"
+                                       placeholder="Ej. A123456" />
                             </div>
 
                             <div class="campo">
@@ -478,6 +490,7 @@
 
     private string Marca = "";
     private string Modelo = "";
+    private string Matricula = "";
     private int? Anio;
     private decimal? Precio;
     private string Estado = "";
@@ -544,6 +557,7 @@
         {
             Marca = Marca,
             Modelo = Modelo,
+            Matricula = Matricula,
             Edicion = string.IsNullOrWhiteSpace(Edicion) ? null : Edicion.Trim(),
             Anio = Anio.Value,
             Precio = Precio.Value,

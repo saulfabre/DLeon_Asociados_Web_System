@@ -5,8 +5,11 @@
 
 <AdminLayout ActivePage="suppliers">
     <div class="pagina-proveedores">
-        <header class="header-proveedores">
+        <header class="header-proveedores admin-page-header">
             <h1>Proveedores</h1>
+            <a class="btn btn-primary" href="/Proveedores/Crear">
+                <i class="cil-plus" aria-hidden="true"></i> Agregar Proveedor
+            </a>
         </header>
 
         <main class="contenido-proveedores">
@@ -41,9 +44,6 @@
                     <button class="btn btn-primary btn-imprimir" type="button" @onclick="ImprimirReporte">
                         <i class="cil-print" aria-hidden="true"></i> Generar reporte
                     </button>
-                    <a class="btn btn-primary btn-agregar" href="/Proveedores/Crear">
-                        <i class="cil-plus" aria-hidden="true"></i> Agregar Proveedor
-                    </a>
                 </div>
             </div>
 
@@ -69,7 +69,7 @@
                         <TemplateColumn Title="Estado" Sortable="true" SortBy="OrdenEstado" Context="proveedor">
                             @proveedor.Estado
                         </TemplateColumn>
-                        <TemplateColumn Title="Acciones" Context="proveedor">
+                        <TemplateColumn Title="Acciones" Class="no-print" Context="proveedor">
                             <div class="acciones-registro">
                                 <a class="btn btn-sm btn-outline-primary"
                                    href="@($"/Proveedores/Editar?proveedor={Uri.EscapeDataString(proveedor.Nombre)}")"

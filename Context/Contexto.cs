@@ -14,6 +14,7 @@ public class Contexto : DbContext
 	public DbSet<Seguros> Seguros { get; set; }
 	public DbSet<Clientes> Clientes { get; set; }
 	public DbSet<Garantias> Garantias { get; set; }
+	public DbSet<Repuestos> Repuestos { get; set; }
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
@@ -88,6 +89,18 @@ public class Contexto : DbContext
 				.WithMany()
 				.HasForeignKey(g => g.VehiculoId)
 				.OnDelete(DeleteBehavior.Restrict);
+		});
+
+		modelBuilder.Entity<Repuestos>(entity =>
+		{
+			entity.HasKey(repuesto => repuesto.Id);
+			entity.Property(repuesto => repuesto.Existe).HasDefaultValue(true);
+			entity.Property(repuesto => repuesto.Nombre).HasMaxLength(120).IsRequired();
+			entity.Property(repuesto => repuesto.Marca).HasMaxLength(80).IsRequired();
+			entity.Property(repuesto => repuesto.Tipo).HasMaxLength(80).IsRequired();
+			entity.Property(repuesto => repuesto.Tamano).HasMaxLength(120);
+			entity.Property(repuesto => repuesto.PrecioUnitario).HasColumnType("decimal(18,2)");
+			entity.Property(repuesto => repuesto.Proveedor).HasMaxLength(120);
 		});
 	}
 }

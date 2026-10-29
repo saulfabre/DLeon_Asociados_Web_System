@@ -9,7 +9,7 @@ public class ClientesServices(IDbContextFactory<Contexto> contextFactory)
     public async Task<List<Clientes>> ObtenerTodos(string? busqueda = null)
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
-        var query = contexto.Clientes.AsNoTracking().AsQueryable();
+        var query = contexto.Clientes.AsNoTracking().Where(cliente => cliente.Existe).AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(busqueda))
         {
@@ -28,7 +28,7 @@ public class ClientesServices(IDbContextFactory<Contexto> contextFactory)
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
         var cliente = await contexto.Clientes.AsNoTracking()
-            .FirstOrDefaultAsync(item => item.Id == id);
+            .FirstOrDefaultAsync(item => item.Id == id && item.Existe);
         return cliente is null ? null : SepararNombre(cliente);
     }
 
@@ -38,7 +38,7 @@ public class ClientesServices(IDbContextFactory<Contexto> contextFactory)
         NormalizarYValidar(cliente);
 
         await using var contexto = await contextFactory.CreateDbContextAsync();
-        if (await contexto.Clientes.AnyAsync(existente => existente.Documento == cliente.Documento))
+        if (await contexto.Clientes.AnyAsync(existente => existente.Existe && existente.Documento == cliente.Documento))
         {
             throw new InvalidOperationException("Ya existe un cliente con ese documento.");
         }
@@ -55,13 +55,13 @@ public class ClientesServices(IDbContextFactory<Contexto> contextFactory)
         NormalizarYValidar(cliente);
 
         await using var contexto = await contextFactory.CreateDbContextAsync();
-        var existente = await contexto.Clientes.FirstOrDefaultAsync(c => c.Id == cliente.Id);
+        var existente = await contexto.Clientes.FirstOrDefaultAsync(c => c.Id == cliente.Id && c.Existe);
         if (existente is null)
         {
             return false;
         }
 
-        if (await contexto.Clientes.AnyAsync(c => c.Id != cliente.Id && c.Documento == cliente.Documento))
+        if (await contexto.Clientes.AnyAsync(c => c.Existe && c.Id != cliente.Id && c.Documento == cliente.Documento))
         {
             throw new InvalidOperationException("Ya existe otro cliente con ese documento.");
         }
@@ -79,13 +79,13 @@ public class ClientesServices(IDbContextFactory<Contexto> contextFactory)
     public async Task<bool> Eliminar(int id)
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
-        var cliente = await contexto.Clientes.FirstOrDefaultAsync(c => c.Id == id);
+        var cliente = await contexto.Clientes.FirstOrDefaultAsync(c => c.Id == id && c.Existe);
         if (cliente is null)
         {
             return false;
         }
 
-        contexto.Clientes.Remove(cliente);
+        cliente.Existe = false;
         await contexto.SaveChangesAsync();
         return true;
     }

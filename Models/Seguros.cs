@@ -8,6 +8,8 @@ public class Seguros
     [Key]
     public int Id { get; set; }
 
+    public bool Existe { get; set; } = true;
+
     [Required]
     [Range(1, int.MaxValue)]
     public int VehiculoId { get; set; }
@@ -44,8 +46,20 @@ public class Seguros
     public string ClienteDireccion { get; set; } = string.Empty;
 
     [Required]
+    [StringLength(50)]
+    public string NumeroSeguro { get; set; } = string.Empty;
+
+    [Required]
+    [StringLength(20)]
+    public string TipoProveedor { get; set; } = "Propio";
+
+    [Required]
+    [StringLength(120)]
+    public string ProveedorNombre { get; set; } = string.Empty;
+
+    [Required]
     [StringLength(80)]
-    public string Tipo { get; set; } = "Seguro Vehicular";
+    public string Tipo { get; set; } = "Estandar";
 
     [Required]
     [DataType(DataType.Date)]

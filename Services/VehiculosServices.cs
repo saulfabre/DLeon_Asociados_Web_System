@@ -83,9 +83,10 @@ public class VehiculosServices(IDbContextFactory<Contexto> contextFactory)
 
         if (string.IsNullOrWhiteSpace(vehiculo.Marca) ||
             string.IsNullOrWhiteSpace(vehiculo.Modelo) ||
+            string.IsNullOrWhiteSpace(vehiculo.Matricula) ||
             vehiculo.Anio <= 0)
         {
-            throw new InvalidOperationException("Los datos mínimos del vehículo son obligatorios.");
+            throw new InvalidOperationException("La marca, el modelo, la matrícula y el año del vehículo son obligatorios.");
         }
 
         if (await Existe(vehiculo.Marca, vehiculo.Modelo, vehiculo.Anio, vehiculo.Edicion, vehiculo.Tipo))
@@ -102,6 +103,8 @@ public class VehiculosServices(IDbContextFactory<Contexto> contextFactory)
                 vehiculo.Edicion
             }.Where(value => !string.IsNullOrWhiteSpace(value)));
         }
+
+        vehiculo.Matricula = vehiculo.Matricula.Trim();
 
         if (vehiculo.FechaPublicacion == null)
         {
@@ -126,10 +129,11 @@ public class VehiculosServices(IDbContextFactory<Contexto> contextFactory)
 
         if (string.IsNullOrWhiteSpace(vehiculo.Marca) ||
             string.IsNullOrWhiteSpace(vehiculo.Modelo) ||
+            string.IsNullOrWhiteSpace(vehiculo.Matricula) ||
             string.IsNullOrWhiteSpace(vehiculo.Tipo) ||
             vehiculo.Anio <= 0)
         {
-            throw new InvalidOperationException("Los datos mínimos del vehículo son obligatorios.");
+            throw new InvalidOperationException("La marca, el modelo, la matrícula, el tipo y el año del vehículo son obligatorios.");
         }
 
         if (await Existe(
@@ -155,6 +159,7 @@ public class VehiculosServices(IDbContextFactory<Contexto> contextFactory)
 
         existente.Marca = vehiculo.Marca;
         existente.Modelo = vehiculo.Modelo;
+        existente.Matricula = vehiculo.Matricula.Trim();
         existente.Edicion = vehiculo.Edicion;
         existente.Tipo = vehiculo.Tipo;
         existente.Anio = vehiculo.Anio;

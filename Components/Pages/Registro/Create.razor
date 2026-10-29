@@ -10,12 +10,9 @@
 
 <AdminLayout ActivePage="customers">
     <section class="pagina-clientes">
-        <header class="header-clientes">
-            <div>
-                <h1>Registro de clientes</h1>
-                <p>Consulta y administra la información de tus clientes.</p>
-            </div>
-            <button class="btn-nuevo-cliente" type="button" @onclick="AbrirNuevo">
+        <header class="header-clientes admin-page-header">
+            <h1>Registro de clientes</h1>
+            <button class="btn btn-primary" type="button" @onclick="AbrirNuevo">
                 <i class="cil-plus" aria-hidden="true"></i>
                 Nuevo cliente
             </button>

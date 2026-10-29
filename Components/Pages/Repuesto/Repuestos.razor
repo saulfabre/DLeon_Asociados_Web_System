@@ -1,11 +1,15 @@
 @page "/Repuestos"
+@using DLeon_Asociados_Web.Models
+@using DLeon_Asociados_Web.Services
 @using Microsoft.AspNetCore.Components.QuickGrid
+@using RepuestoModel = DLeon_Asociados_Web.Models.Repuestos
 @rendermode InteractiveServer
 @inject IJSRuntime JS
+@inject RepuestosServices RepuestosServices
 
 <AdminLayout ActivePage="parts">
     <div class="pagina-repuestos">
-        <header class="header-repuestos">
+        <header class="header-repuestos admin-page-header">
             <h1>Catálogo de Repuestos</h1>
         </header>
 
@@ -28,13 +32,22 @@
                     <a class="btn btn-outline-secondary btn-importar" href="/Repuestos/Importar">
                         <i class="cil-cloud-download" aria-hidden="true"></i> Importar CSV
                     </a>
-                    <a class="btn btn-primary btn-agregar" href="/Repuestos/Crear">
+                    <button class="btn btn-primary btn-agregar" type="button" @onclick="AbrirNuevo">
                         <i class="cil-plus" aria-hidden="true"></i> Agregar Repuesto
-                    </a>
+                    </button>
                 </div>
             </div>
 
-            @if (RepuestosFiltrados.Count == 0)
+            @if (!string.IsNullOrWhiteSpace(ErrorCarga))
+            {
+                <div class="alert alert-danger" role="alert">@ErrorCarga</div>
+            }
+
+            @if (Cargando)
+            {
+                <div class="estado-vacio" role="status">Cargando repuestos...</div>
+            }
+            else if (RepuestosFiltrados.Count == 0)
             {
                 <div class="estado-vacio">
                     @(RegistrosRepuestos.Count == 0
@@ -45,7 +58,7 @@
             else
             {
                 <div class="tabla-responsive">
-                    <QuickGrid @key="TextoBusqueda" TGridItem="RepuestoRegistro"
+                    <QuickGrid @key="TextoBusqueda" TGridItem="RepuestoModel"
                                Items="@RepuestosFiltrados.AsQueryable()" Pagination="@Paginacion"
                                Class="table table-bordered table-hover align-middle tabla-repuestos">
                         <PropertyColumn Property="repuesto => repuesto.Nombre" Title="Nombre Pieza" Sortable="true" />
@@ -59,6 +72,20 @@
                             </span>
                         </TemplateColumn>
                         <PropertyColumn Property="repuesto => repuesto.Proveedor" Title="Proveedor" Sortable="true" />
+                        <TemplateColumn Title="Acciones" Class="no-print" Context="repuesto">
+                            <div class="acciones-registro">
+                                <button class="btn btn-sm btn-outline-primary" type="button"
+                                        title="Editar repuesto" aria-label="Editar repuesto"
+                                        @onclick="() => AbrirEdicion(repuesto)">
+                                    <i class="cil-pencil" aria-hidden="true"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" type="button"
+                                        title="Eliminar repuesto" aria-label="Eliminar repuesto"
+                                        @onclick="() => Eliminar(repuesto)">
+                                    <i class="cil-trash" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </TemplateColumn>
                     </QuickGrid>
                     <Paginator State="@Paginacion" />
                 </div>
@@ -66,31 +93,98 @@
             </div>
         </main>
     </div>
+    <RepuestoFormModal Visible="MostrarModal"
+                        VisibleChanged="CambiarVisibilidadModal"
+                        Repuesto="RepuestoSeleccionado"
+                        OnSaved="RecargarRepuestos" />
 </AdminLayout>
 
 @code {
     private readonly PaginationState Paginacion = new() { ItemsPerPage = 10 };
-    private readonly List<RepuestoRegistro> RegistrosRepuestos = new()
-    {
-        new("Filtro de Aceite", "Bosch", "Filtro", "Estándar", 4, 12.50m, "Bosch Chile"),
-        new("Pastillas de Freno", "Brembo", "Frenos", "Delantero", 24, 45.00m, "Repuestos Global"),
-        new("Amortiguador Hidráulico", "Monroe", "Suspensión", "Universal", 2, 78.90m, "Distribuidora Sur"),
-        new("Batería 12V 75Ah", "Varta", "Eléctrico", "L3", 15, 110.00m, "Varta Import"),
-        new("Bujía de Iridio", "NGK", "Motor", "Universal", 80, 6.50m, "Repuestos Global")
-    };
+    private List<RepuestoModel> RegistrosRepuestos = new();
     private string TextoBusqueda = string.Empty;
+    private string? ErrorCarga;
+    private bool Cargando = true;
+    private bool MostrarModal;
+    private RepuestoModel? RepuestoSeleccionado;
 
-    private static GridSort<RepuestoRegistro> OrdenPrecio { get; } =
-        GridSort<RepuestoRegistro>.ByAscending(repuesto => repuesto.PrecioUnitario);
+    private static GridSort<RepuestoModel> OrdenPrecio { get; } =
+        GridSort<RepuestoModel>.ByAscending(repuesto => repuesto.PrecioUnitario);
 
-    private List<RepuestoRegistro> RepuestosFiltrados => RegistrosRepuestos
+    private List<RepuestoModel> RepuestosFiltrados => RegistrosRepuestos
         .Where(repuesto => string.IsNullOrWhiteSpace(TextoBusqueda) ||
             repuesto.Nombre.Contains(TextoBusqueda.Trim(), StringComparison.OrdinalIgnoreCase) ||
             repuesto.Marca.Contains(TextoBusqueda.Trim(), StringComparison.OrdinalIgnoreCase) ||
             repuesto.Tipo.Contains(TextoBusqueda.Trim(), StringComparison.OrdinalIgnoreCase) ||
-            repuesto.Tamano.Contains(TextoBusqueda.Trim(), StringComparison.OrdinalIgnoreCase) ||
-            repuesto.Proveedor.Contains(TextoBusqueda.Trim(), StringComparison.OrdinalIgnoreCase))
+            (repuesto.Tamano?.Contains(TextoBusqueda.Trim(), StringComparison.OrdinalIgnoreCase) ?? false) ||
+            (repuesto.Proveedor?.Contains(TextoBusqueda.Trim(), StringComparison.OrdinalIgnoreCase) ?? false))
         .ToList();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RecargarRepuestos();
+        Cargando = false;
+    }
+
+    private async Task RecargarRepuestos()
+    {
+        try
+        {
+            ErrorCarga = null;
+            RegistrosRepuestos = await RepuestosServices.ObtenerTodos();
+            await ReiniciarPaginacion();
+        }
+        catch (Exception exception)
+        {
+            ErrorCarga = $"No fue posible cargar los repuestos. {exception.Message}";
+        }
+    }
+
+    private void AbrirNuevo()
+    {
+        RepuestoSeleccionado = null;
+        MostrarModal = true;
+    }
+
+    private void AbrirEdicion(RepuestoModel repuesto)
+    {
+        RepuestoSeleccionado = repuesto;
+        MostrarModal = true;
+    }
+
+    private Task CambiarVisibilidadModal(bool visible)
+    {
+        MostrarModal = visible;
+        return Task.CompletedTask;
+    }
+
+    private async Task Eliminar(RepuestoModel repuesto)
+    {
+        var confirmar = await JS.InvokeAsync<bool>(
+            "confirm",
+            $"¿Deseas eliminar el repuesto {repuesto.Nombre}?");
+
+        if (!confirmar)
+        {
+            return;
+        }
+
+        try
+        {
+            ErrorCarga = null;
+            if (!await RepuestosServices.Eliminar(repuesto.Id))
+            {
+                ErrorCarga = "El repuesto ya no existe o fue eliminado por otro usuario.";
+                return;
+            }
+
+            await RecargarRepuestos();
+        }
+        catch (Exception exception)
+        {
+            ErrorCarga = $"No fue posible eliminar el repuesto. {exception.Message}";
+        }
+    }
 
     private async Task LimpiarFiltros()
     {
@@ -101,13 +195,4 @@
     private Task ReiniciarPaginacion() => Paginacion.SetCurrentPageIndexAsync(0);
 
     private Task ImprimirReporte() => JS.InvokeVoidAsync("window.print").AsTask();
-
-    private sealed record RepuestoRegistro(
-        string Nombre,
-        string Marca,
-        string Tipo,
-        string Tamano,
-        int Disponibles,
-        decimal PrecioUnitario,
-        string Proveedor);
 }

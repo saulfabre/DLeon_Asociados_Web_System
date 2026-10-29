@@ -46,6 +46,11 @@ namespace DLeon_Asociados_Web.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(40)");
 
+                    b.Property<bool>("Existe")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
                     b.Property<string>("NombreCompleto")
                         .IsRequired()
                         .HasMaxLength(160)
@@ -62,9 +67,45 @@ namespace DLeon_Asociados_Web.Migrations
 
                     b.HasIndex("Documento")
                         .IsUnique()
-                        .HasFilter("[Documento] IS NOT NULL");
+                        .HasFilter("[Documento] IS NOT NULL AND [Existe] = 1");
 
                     b.ToTable("Clientes");
+                });
+
+            modelBuilder.Entity("DLeon_Asociados_Web.Models.Garantias", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Existe")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<DateTime>("FechaExpiracion")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime>("FechaInicio")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("VehiculoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FechaExpiracion");
+
+                    b.HasIndex("VehiculoId");
+
+                    b.ToTable("Garantias");
                 });
 
             modelBuilder.Entity("DLeon_Asociados_Web.Models.Seguros", b =>
@@ -120,16 +161,42 @@ namespace DLeon_Asociados_Web.Migrations
                         .HasColumnType("nvarchar(30)")
                         .HasDefaultValue("");
 
+                    b.Property<bool>("Existe")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
                     b.Property<DateTime>("FechaExpiracion")
                         .HasColumnType("date");
 
                     b.Property<DateTime>("FechaInicio")
                         .HasColumnType("date");
 
+                    b.Property<string>("NumeroSeguro")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("");
+
+                    b.Property<string>("ProveedorNombre")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)")
+                        .HasDefaultValue("");
+
                     b.Property<string>("Tipo")
                         .IsRequired()
                         .HasMaxLength(80)
                         .HasColumnType("nvarchar(80)");
+
+                    b.Property<string>("TipoProveedor")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Propio");
 
                     b.Property<int>("VehiculoId")
                         .HasColumnType("int");
@@ -143,6 +210,53 @@ namespace DLeon_Asociados_Web.Migrations
                     b.HasIndex("VehiculoId");
 
                     b.ToTable("Seguros");
+                });
+
+            modelBuilder.Entity("DLeon_Asociados_Web.Models.Repuestos", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Marca")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<int>("Disponibles")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Existe")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<decimal>("PrecioUnitario")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Proveedor")
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<string>("Tamano")
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Repuestos");
                 });
 
             modelBuilder.Entity("DLeon_Asociados_Web.Models.Vehiculos", b =>
@@ -200,6 +314,11 @@ namespace DLeon_Asociados_Web.Migrations
                         .HasMaxLength(80)
                         .HasColumnType("nvarchar(80)");
 
+                    b.Property<string>("Matricula")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<string>("Modelo")
                         .IsRequired()
                         .HasMaxLength(80)
@@ -229,6 +348,17 @@ namespace DLeon_Asociados_Web.Migrations
                     b.HasIndex("Marca", "Modelo");
 
                     b.ToTable("Vehiculos");
+                });
+
+            modelBuilder.Entity("DLeon_Asociados_Web.Models.Garantias", b =>
+                {
+                    b.HasOne("DLeon_Asociados_Web.Models.Vehiculos", "Vehiculo")
+                        .WithMany()
+                        .HasForeignKey("VehiculoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Vehiculo");
                 });
 
             modelBuilder.Entity("DLeon_Asociados_Web.Models.Seguros", b =>

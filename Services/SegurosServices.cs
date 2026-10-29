@@ -14,6 +14,7 @@ public class SegurosServices(IDbContextFactory<Contexto> contextFactory)
         return await contexto.Seguros
             .AsNoTracking()
             .Include(seguro => seguro.Vehiculo)
+            .Where(seguro => seguro.Existe)
             .OrderBy(seguro => seguro.FechaExpiracion)
             .ToListAsync();
     }
@@ -25,7 +26,7 @@ public class SegurosServices(IDbContextFactory<Contexto> contextFactory)
         return await contexto.Seguros
             .AsNoTracking()
             .Include(seguro => seguro.Vehiculo)
-            .FirstOrDefaultAsync(seguro => seguro.Id == id);
+            .FirstOrDefaultAsync(seguro => seguro.Id == id && seguro.Existe);
     }
 
     public async Task<List<Seguros>> Buscar(string termino)
@@ -41,10 +42,15 @@ public class SegurosServices(IDbContextFactory<Contexto> contextFactory)
         return await contexto.Seguros
             .AsNoTracking()
             .Include(seguro => seguro.Vehiculo)
-            .Where(seguro => seguro.Tipo.Contains(busqueda) ||
+            .Where(seguro => seguro.Existe &&
+                (seguro.NumeroSeguro.Contains(busqueda) ||
+                seguro.ProveedorNombre.Contains(busqueda) ||
+                seguro.TipoProveedor.Contains(busqueda) ||
+                seguro.Tipo.Contains(busqueda) ||
                 seguro.Vehiculo!.Marca.Contains(busqueda) ||
                 seguro.Vehiculo.Modelo.Contains(busqueda) ||
-                seguro.Vehiculo.Nombre.Contains(busqueda))
+                seguro.Vehiculo.Nombre.Contains(busqueda) ||
+                seguro.Vehiculo.Matricula.Contains(busqueda)))
             .OrderBy(seguro => seguro.FechaExpiracion)
             .ToListAsync();
     }
@@ -55,12 +61,13 @@ public class SegurosServices(IDbContextFactory<Contexto> contextFactory)
         Validar(seguro);
 
         await using var contexto = await contextFactory.CreateDbContextAsync();
-        if (!await contexto.Vehiculos.AnyAsync(vehiculo => vehiculo.Id == seguro.VehiculoId))
+        if (!await contexto.Vehiculos.AnyAsync(vehiculo => vehiculo.Id == seguro.VehiculoId && vehiculo.Existe))
         {
-            throw new InvalidOperationException("El vehículo seleccionado ya no existe.");
+            throw new InvalidOperationException("El vehículo seleccionado ya no existe o fue eliminado.");
         }
 
-        if (seguro.ClienteId.HasValue && !await contexto.Clientes.AnyAsync(cliente => cliente.Id == seguro.ClienteId.Value))
+        if (seguro.ClienteId.HasValue &&
+            !await contexto.Clientes.AnyAsync(cliente => cliente.Id == seguro.ClienteId.Value && cliente.Existe))
         {
             throw new InvalidOperationException("El cliente seleccionado ya no existe.");
         }
@@ -78,18 +85,21 @@ public class SegurosServices(IDbContextFactory<Contexto> contextFactory)
         Validar(seguro);
 
         await using var contexto = await contextFactory.CreateDbContextAsync();
-        var existente = await contexto.Seguros.FirstOrDefaultAsync(item => item.Id == seguro.Id);
+        var existente = await contexto.Seguros.FirstOrDefaultAsync(item => item.Id == seguro.Id && item.Existe);
         if (existente is null)
         {
             return false;
         }
 
-        if (!await contexto.Vehiculos.AnyAsync(vehiculo => vehiculo.Id == seguro.VehiculoId))
+        if (existente.VehiculoId != seguro.VehiculoId &&
+            !await contexto.Vehiculos.AnyAsync(vehiculo => vehiculo.Id == seguro.VehiculoId && vehiculo.Existe))
         {
-            throw new InvalidOperationException("El vehículo seleccionado ya no existe.");
+            throw new InvalidOperationException("El vehículo seleccionado ya no existe o fue eliminado.");
         }
 
-        if (seguro.ClienteId.HasValue && !await contexto.Clientes.AnyAsync(cliente => cliente.Id == seguro.ClienteId.Value))
+        if (seguro.ClienteId.HasValue &&
+            seguro.ClienteId != existente.ClienteId &&
+            !await contexto.Clientes.AnyAsync(cliente => cliente.Id == seguro.ClienteId.Value && cliente.Existe))
         {
             throw new InvalidOperationException("El cliente seleccionado ya no existe.");
         }
@@ -97,6 +107,9 @@ public class SegurosServices(IDbContextFactory<Contexto> contextFactory)
         existente.VehiculoId = seguro.VehiculoId;
         existente.ClienteId = seguro.ClienteId;
         existente.Tipo = seguro.Tipo.Trim();
+        existente.NumeroSeguro = seguro.NumeroSeguro.Trim();
+        existente.TipoProveedor = seguro.TipoProveedor.Trim();
+        existente.ProveedorNombre = seguro.ProveedorNombre.Trim();
         existente.FechaInicio = seguro.FechaInicio.Date;
         existente.FechaExpiracion = seguro.FechaExpiracion.Date;
         existente.ClienteNombre = seguro.ClienteNombre.Trim();
@@ -112,13 +125,13 @@ public class SegurosServices(IDbContextFactory<Contexto> contextFactory)
     public async Task<bool> Eliminar(int id)
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
-        var seguro = await contexto.Seguros.FirstOrDefaultAsync(item => item.Id == id);
+        var seguro = await contexto.Seguros.FirstOrDefaultAsync(item => item.Id == id && item.Existe);
         if (seguro is null)
         {
             return false;
         }
 
-        contexto.Seguros.Remove(seguro);
+        seguro.Existe = false;
         await contexto.SaveChangesAsync();
         return true;
     }
@@ -137,6 +150,23 @@ public class SegurosServices(IDbContextFactory<Contexto> contextFactory)
             throw new InvalidOperationException("El vehículo y el tipo de seguro son obligatorios.");
         }
 
+        if (string.IsNullOrWhiteSpace(seguro.NumeroSeguro) ||
+            string.IsNullOrWhiteSpace(seguro.TipoProveedor) ||
+            string.IsNullOrWhiteSpace(seguro.ProveedorNombre))
+        {
+            throw new InvalidOperationException("El número, el proveedor y el origen del proveedor son obligatorios.");
+        }
+
+        if (seguro.TipoProveedor is not ("Propio" or "Externo"))
+        {
+            throw new InvalidOperationException("El origen del proveedor debe ser Propio o Externo.");
+        }
+
+        if (seguro.Tipo is not ("Estandar" or "Semi-Full" or "Full"))
+        {
+            throw new InvalidOperationException("El tipo de seguro debe ser Estandar, Semi-Full o Full.");
+        }
+
         if (seguro.FechaInicio == default || seguro.FechaExpiracion == default ||
             seguro.FechaExpiracion.Date < seguro.FechaInicio.Date)
         {
@@ -144,6 +174,9 @@ public class SegurosServices(IDbContextFactory<Contexto> contextFactory)
         }
 
         seguro.Tipo = seguro.Tipo.Trim();
+        seguro.NumeroSeguro = seguro.NumeroSeguro.Trim();
+        seguro.TipoProveedor = seguro.TipoProveedor.Trim();
+        seguro.ProveedorNombre = seguro.ProveedorNombre.Trim();
         seguro.ClienteNombre = seguro.ClienteNombre.Trim();
         seguro.ClienteApellido = seguro.ClienteApellido.Trim();
         seguro.ClienteDocumento = seguro.ClienteDocumento.Trim();

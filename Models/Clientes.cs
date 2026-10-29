@@ -9,6 +9,8 @@ public class Clientes
     [Column("IdCliente")]
     public int Id { get; set; }
 
+    public bool Existe { get; set; } = true;
+
     [StringLength(160)]
     public string NombreCompleto { get; set; } = string.Empty;
 

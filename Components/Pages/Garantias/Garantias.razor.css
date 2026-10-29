@@ -22,6 +22,10 @@
     font-weight: 600;
 }
 
+.header-garantias .btn {
+    min-height: 40px;
+}
+
 .contenido-garantias {
     min-width: 0;
     padding: 24px;
@@ -96,7 +100,7 @@
 }
 
 ::deep .tabla-garantias {
-    min-width: 760px;
+    min-width: 900px;
     margin-bottom: 0;
     color: #344054;
     font-size: .85rem;
@@ -158,6 +162,7 @@
 
 @media print {
     .barra-filtros,
+    .header-garantias .btn,
     ::deep .paginator {
         display: none !important;
     }

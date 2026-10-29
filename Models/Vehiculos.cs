@@ -16,6 +16,10 @@ public class Vehiculos
     [StringLength(80)]
     public string Modelo { get; set; } = string.Empty;
 
+    [Required]
+    [StringLength(20)]
+    public string Matricula { get; set; } = string.Empty;
+
     [StringLength(120)]
     public string? Edicion { get; set; }
 

@@ -47,6 +47,10 @@
     border-bottom: 2px solid #000000;
 }
 
+.header-navigation a:not([href]) {
+    cursor: pointer;
+}
+
 .login-btn {
     justify-self: end;
     background-color: #000000;
